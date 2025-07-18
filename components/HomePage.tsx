@@ -6,7 +6,7 @@ import { Calendar, MapPin, Users, Target, Globe, Heart, ChevronLeft, ChevronRigh
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
 interface HomePageProps {
-  onPageChange: (page: string) => void;
+  onPageChange?: (page: string) => void;
 }
 
 export function HomePage({ onPageChange }: HomePageProps) {

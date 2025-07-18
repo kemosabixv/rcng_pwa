@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { AuthProvider, useAuth } from './components/AuthContext';
-import { Layout } from './components/Layout';
-import { HomePage } from './components/HomePage';
-import { AboutPage } from './components/AboutPage';
-import { DirectoryPage } from './components/DirectoryPage';
-import { EventsPage } from './components/EventsPage';
-import { BlogPage } from './components/BlogPage';
-import { MembershipPage } from './components/MembershipPage';
-import { AdminDashboard } from './components/AdminDashboard';
-import { Button } from './components/ui/button';
+import { AuthProvider, useAuth } from '../components/AuthContext';
+import { Layout } from '../components/Layout';
+import { HomePage } from '../components/HomePage';
+import { AboutPage } from '../components/AboutPage';
+import { DirectoryPage } from '../components/DirectoryPage';
+import { EventsPage } from '../components/EventsPage';
+import { BlogPage } from '../components/BlogPage';
+import { MembershipPage } from '../components/MembershipPage';
+import { AdminDashboard } from '../components/AdminDashboard';
+import { Button } from '../components/ui/button';
 import { Settings, Globe } from 'lucide-react';
 
 function AppContent() {
@@ -89,7 +89,7 @@ function AppContent() {
   );
 }
 
-export default function App() {
+export default function _app() {
   return (
     <AuthProvider>
       <AppContent />
