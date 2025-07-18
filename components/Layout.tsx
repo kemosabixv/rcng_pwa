@@ -12,6 +12,7 @@ interface LayoutProps {
   onPageChange: (page: string) => void;
 }
 
+
 export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
