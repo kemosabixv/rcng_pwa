@@ -361,7 +361,14 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
               </div>
             </div>
           </div>
-          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm text-primary-foreground/80">
+          <div
+            className="border-t mt-8 pt-8 text-center text-sm"
+            style={{
+              backgroundColor: "#254998",
+              color: "rgba(255, 255, 255, 1)",
+              borderColor: "rgba(0, 0, 0, 0.1)",
+            }}
+          >
             <p>
               &copy; 2025 Rotary Club of Nairobi Gigiri. All rights reserved.
             </p>
