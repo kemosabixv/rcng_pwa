@@ -139,13 +139,17 @@ interface Analytics {
   };
 }
 
+
 export function AdminDashboard({ onClose }: AdminDashboardProps) {
-  const { user, session } = useAuth(); // <-- Get session here
+  // Auth context
+  const { user, session } = useAuth();
+
+  // UI states
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   // Data states
   const [members, setMembers] = useState<Member[]>([]);
   const [committees, setCommittees] = useState<Committee[]>([]);
@@ -219,6 +223,22 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
 
   const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     const accessToken = session?.access_token;
+    //log the endpoint and options for debugging
+    console.log('makeRequest called with:', { endpoint, options });
+    console.log('Access Token:', accessToken);
+    if (!accessToken) {
+      throw new Error('No access token found. Please log in.');
+    }
+    if (!projectId || !publicAnonKey) {
+      throw new Error('Supabase project ID or public anon key is not set.');
+    }
+    // Ensure the endpoint starts with a slash
+    if (!endpoint.startsWith('/')) {
+      endpoint = `/${endpoint}`;
+    }
+    // Construct the full URL for the request
+    console.log(`Making request to: https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`, options);
+
     const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`, {
       ...options,
       headers: {

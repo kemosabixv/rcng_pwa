@@ -9,11 +9,19 @@ import { createClient } from "@supabase/supabase-js";
 const projectId = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID ?? "";
 const publicAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-if (!projectId || !publicAnonKey) {
-  throw new Error("Supabase environment variables are not set.");
+// Singleton pattern for Supabase client
+
+// Extend globalThis to include __supabaseClient
+declare global {
+  // eslint-disable-next-line no-var
+  var __supabaseClient: ReturnType<typeof createClient> | undefined;
 }
 
-const supabase = createClient(`https://${projectId}.supabase.co`, publicAnonKey);
+let supabase: ReturnType<typeof createClient> | null = null;
+if (!globalThis.__supabaseClient && projectId && publicAnonKey) {
+  globalThis.__supabaseClient = createClient(`https://${projectId}.supabase.co`, publicAnonKey);
+}
+supabase = globalThis.__supabaseClient ?? null;
 
 interface User {
   id: string;
@@ -50,7 +58,7 @@ const client =
   publicAnonKey &&
   projectId !== "placeholder-project-id" &&
   publicAnonKey !== "placeholder-anon-key"
-    ? createClient(`https://${projectId}.supabase.co`, publicAnonKey)
+    ? supabase
     : null;
 
 export function AuthProvider({ children }: { children: ReactNode }) {

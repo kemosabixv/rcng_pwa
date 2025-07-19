@@ -76,7 +76,10 @@ export function DirectoryPage() {
       profession: "Attorney",
       company: "Chen & Associates Law Firm",
       joinDate: "2018",
-      memberType: "active"
+      memberType: "active",
+      email: "michealchen@rotarynairobigigiri.org",
+      phone: "(123) 456-7890",
+      
     },
     {
       id: '2',
@@ -84,7 +87,9 @@ export function DirectoryPage() {
       profession: "Physician",
       company: "Adams Medical Center",
       joinDate: "2019",
-      memberType: "active"
+      memberType: "active",
+      email: "jenniferadams@rotarynairobigigiri.org",
+      phone: "(123) 456-7890",
     },
     {
       id: '3',
@@ -92,7 +97,9 @@ export function DirectoryPage() {
       profession: "Financial Advisor",
       company: "Brown Financial Services",
       joinDate: "2020",
-      memberType: "active"
+      memberType: "active",
+      email: "davidbrown@rotarynairobigigiri.org",
+      phone: "(123) 456-7890",
     }
   ];
 
@@ -292,7 +299,7 @@ export function DirectoryPage() {
                     </div>
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Mail className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">{member.email}</span>
+                      <span className="truncate">{member.email ? member.email : 'No email available'}</span>
                     </div>
                     {member.phone && (
                       <div className="flex items-center text-sm text-muted-foreground">
