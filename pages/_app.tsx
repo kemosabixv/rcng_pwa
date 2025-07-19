@@ -53,6 +53,8 @@ function AppContent() {
         return <BlogPage />;
       case "membership":
         return <MembershipPage />;
+      case "contact":
+        return <ContactPage />;
       default:
         return <HomePage onPageChange={handlePageChange} />;
     }
