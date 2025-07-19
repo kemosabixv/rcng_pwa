@@ -77,8 +77,10 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <span className="text-sm">info@rotarynairobigigiri.org</span>
+              <Mail className="h-4 w-4 text-white" />
+              <span className="text-sm text-white">
+                info@rotarynairobigigiri.org
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <Phone className="h-4 w-4" />
