@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -8,14 +12,14 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #0052CC;
+  --primary: #0052cc;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #0052CC;
+  --secondary-foreground: #0052cc;
   --muted: #ececf0;
   --muted-foreground: #717182;
   --accent: #e9ebef;
-  --accent-foreground: #0052CC;
+  --accent-foreground: #0052cc;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
   --border: rgba(0, 0, 0, 0.1);
@@ -33,23 +37,23 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #0052CC;
+  --sidebar-primary: #0052cc;
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   /* ... your existing variables ... */
-  --text-xs: 0.75rem;    /* 10.5px at 14px base */
-  --text-sm: 0.875rem;   /* 12.25px at 14px base */
-  --text-base: 1rem;     /* 14px (matches --font-size) */
-  --text-lg: 1.125rem;   /* 15.75px at 14px base */
-  --text-xl: 1.25rem;    /* 17.5px at 14px base */
-  --text-2xl: 1.5rem;    /* 21px at 14px base */
-  --text-3xl: 1.875rem;  /* 26.25px at 14px base */
-  --text-4xl: 2.25rem;   /* 31.5px at 14px base */
-  --text-5xl: 3rem;      /* 42px at 14px base */
-  --text-6xl: 3.75rem;   /* 52.5px at 14px base */
+  --text-xs: 0.75rem; /* 10.5px at 14px base */
+  --text-sm: 0.875rem; /* 12.25px at 14px base */
+  --text-base: 1rem; /* 14px (matches --font-size) */
+  --text-lg: 1.125rem; /* 15.75px at 14px base */
+  --text-xl: 1.25rem; /* 17.5px at 14px base */
+  --text-2xl: 1.5rem; /* 21px at 14px base */
+  --text-3xl: 1.875rem; /* 26.25px at 14px base */
+  --text-4xl: 2.25rem; /* 31.5px at 14px base */
+  --text-5xl: 3rem; /* 42px at 14px base */
+  --text-6xl: 3.75rem; /* 52.5px at 14px base */
 }
 
 .dark {
@@ -132,11 +136,13 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 
