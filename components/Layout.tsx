@@ -15,14 +15,17 @@ import {
 import { useAuth } from "./AuthContext";
 import { LoginModal } from "./LoginModal";
 import { RotaryLogo, RotaryLogoCompact } from "./RotaryLogo";
+import Link from "next/link";
 
+// Remove currentPage and onPageChange from LayoutProps
 interface LayoutProps {
   children: React.ReactNode;
   currentPage: string;
   onPageChange: (page: string) => void;
 }
 
-export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
+// Update navigation links to use Next.js routing
+export function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
@@ -66,7 +69,7 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
       setIsLoginModalOpen(true);
       return;
     }
-    onPageChange(href);
+    // onPageChange(href);
     setIsMobileMenuOpen(false);
   };
 
@@ -161,45 +164,25 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                   {item.dropdown ? (
                     <div className="relative">
                       <button className="flex items-center space-x-1 py-2 px-3 rounded-md hover:bg-gray-100 transition-colors">
-                        <span
-                          className={
-                            currentPage === item.href
-                              ? "text-[#0052CC] font-medium"
-                              : "text-gray-700"
-                          }
-                        >
-                          {item.name}
-                        </span>
+                        <span className="text-gray-700">{item.name}</span>
                         <ChevronDown className="h-4 w-4" />
                       </button>
                       <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         {item.dropdown.map((subItem) => (
-                          <button
-                            key={subItem.name}
-                            onClick={() => handleNavClick(subItem.href)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            {subItem.name}
-                          </button>
+                          <Link key={subItem.name} href={`/${subItem.href}`}>
+                            <span className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                              {subItem.name}
+                            </span>
+                          </Link>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    <button
-                      onClick={() =>
-                        handleNavClick(item.href, item.requiresAuth)
-                      }
-                      className={`py-2 px-3 rounded-md transition-colors flex items-center space-x-1 ${
-                        currentPage === item.href
-                          ? "text-[#0052CC] font-medium"
-                          : "text-gray-700 hover:bg-gray-100"
-                      } ${item.requiresAuth && !user ? "opacity-60" : ""}`}
-                    >
-                      <span>{item.name}</span>
-                      {item.requiresAuth && !user && (
-                        <User className="h-3 w-3" />
-                      )}
-                    </button>
+                    <Link href={`/${item.href}`}>
+                      <span className="py-2 px-3 rounded-md transition-colors flex items-center space-x-1 text-gray-700 hover:bg-gray-100 cursor-pointer">
+                        {item.name}
+                      </span>
+                    </Link>
                   )}
                 </div>
               ))}
@@ -232,33 +215,19 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
               <nav className="space-y-2">
                 {navigation.map((item) => (
                   <div key={item.name}>
-                    <button
-                      onClick={() =>
-                        handleNavClick(item.href, item.requiresAuth)
-                      }
-                      className={`block w-full text-left py-2 px-3 rounded-md transition-colors ${
-                        currentPage === item.href
-                          ? "text-[#0052CC] font-medium bg-blue-50"
-                          : "text-gray-700 hover:bg-gray-100"
-                      } ${item.requiresAuth && !user ? "opacity-60" : ""}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{item.name}</span>
-                        {item.requiresAuth && !user && (
-                          <User className="h-4 w-4" />
-                        )}
-                      </div>
-                    </button>
+                    <Link href={`/${item.href}`}>
+                      <span className="block w-full text-left py-2 px-3 rounded-md transition-colors text-gray-700 hover:bg-gray-100 cursor-pointer">
+                        {item.name}
+                      </span>
+                    </Link>
                     {item.dropdown && (
                       <div className="ml-4 space-y-1">
                         {item.dropdown.map((subItem) => (
-                          <button
-                            key={subItem.name}
-                            onClick={() => handleNavClick(subItem.href)}
-                            className="block w-full text-left py-2 px-3 text-sm text-gray-600 hover:bg-gray-100 rounded-md"
-                          >
-                            {subItem.name}
-                          </button>
+                          <Link key={subItem.name} href={`/${subItem.href}`}>
+                            <span className="block w-full text-left py-2 px-3 text-sm text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer">
+                              {subItem.name}
+                            </span>
+                          </Link>
                         ))}
                       </div>
                     )}
@@ -299,44 +268,29 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <button
-                    onClick={() => onPageChange("about")}
-                    className="text-primary-foreground/80 hover:text-primary-foreground"
-                  >
+                  <Link href="/about" className="text-primary-foreground/80 hover:text-primary-foreground">
                     About Us
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => onPageChange("events")}
-                    className="text-primary-foreground/80 hover:text-primary-foreground"
-                  >
+                  <Link href="/events" className="text-primary-foreground/80 hover:text-primary-foreground">
                     Events
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => onPageChange("projects")}
-                    className="text-primary-foreground/80 hover:text-primary-foreground"
-                  >
+                  <Link href="/projects" className="text-primary-foreground/80 hover:text-primary-foreground">
                     Projects
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => onPageChange("membership")}
-                    className="text-primary-foreground/80 hover:text-primary-foreground"
-                  >
+                  <Link href="/membership" className="text-primary-foreground/80 hover:text-primary-foreground">
                     Join Us
-                  </button>
+                  </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={() => onPageChange("contact")}
-                    className="text-primary-foreground/80 hover:text-primary-foreground"
-                  >
+                  <Link href="/contact" className="text-primary-foreground/80 hover:text-primary-foreground">
                     Contact Us
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </div>

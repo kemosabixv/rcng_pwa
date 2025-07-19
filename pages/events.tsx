@@ -1,5 +1,5 @@
 import {EventsPage} from '../components/EventsPage'
 
-export default function Home() {
+export default function Events() {
     return <EventsPage />
 }

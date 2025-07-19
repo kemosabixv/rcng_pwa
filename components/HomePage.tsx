@@ -15,6 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import Link from "next/link";
 
 interface HomePageProps {
   onPageChange?: (page: string) => void;
@@ -32,6 +33,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
       image:
         "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&h=600",
       cta: "Learn More About Us",
+      ctaHref: "/about",
     },
     {
       title: "Make a Difference Today",
@@ -41,6 +43,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
       image:
         "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1200&h=600",
       cta: "View Our Projects",
+      ctaHref: "/projects",
     },
     {
       title: "Join Our Fellowship",
@@ -50,6 +53,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
       image:
         "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&h=600",
       cta: "Become a Member",
+      ctaHref: "/membership",
     },
   ];
 
@@ -151,14 +155,15 @@ export function HomePage({ onPageChange }: HomePageProps) {
                   <p className="text-xl mb-8 max-w-2xl mx-auto">
                     {slide.description}
                   </p>
-                  <Button
-                    size="lg"
-                    className="text-white hover:opacity-90"
-                    style={{ backgroundColor: "#1a73eb" }}
-                    onClick={() => onPageChange?.("about")}
-                  >
-                    {slide.cta}
-                  </Button>
+                  <Link href={slide.ctaHref}>
+                    <Button
+                      size="lg"
+                      className="text-white hover:opacity-90"
+                      style={{ backgroundColor: "#1a73eb" }}
+                    >
+                      {slide.cta}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -279,13 +284,11 @@ export function HomePage({ onPageChange }: HomePageProps) {
                         <span>Downtown Community Center</span>
                       </div>
                     </div>
-                    <Button
-                      size="lg"
-                      className="bg-red-600 hover:bg-red-700"
-                      onClick={() => onPageChange?.("contact")}
-                    >
-                      Get Directions & RSVP
-                    </Button>
+                    <Link href="/contact">
+                      <Button size="lg" className="bg-red-600 hover:bg-red-700">
+                        Get Directions & RSVP
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -414,15 +417,12 @@ export function HomePage({ onPageChange }: HomePageProps) {
                     </div>
                   </div>
                 ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => onPageChange("events")}
-                >
-                  View All Speakers
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                <Link href="/events">
+                  <Button variant="outline" size="sm" className="w-full">
+                    View All Speakers
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>   
               </CardContent>
             </Card>
           </div>

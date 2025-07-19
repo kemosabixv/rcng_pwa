@@ -1,5 +1,5 @@
-import {AboutPage} from '../components/AboutPage'
+import { AboutPage } from '../components/AboutPage';
 
-export default function Home() {
-    return <AboutPage />
+export default function About() {
+  return <AboutPage />;
 }

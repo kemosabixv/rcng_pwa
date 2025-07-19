@@ -1,30 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/globals.css";
 import { AuthProvider, useAuth } from "../components/AuthContext";
 import { Layout } from "../components/Layout";
-import { HomePage } from "../components/HomePage";
-import { AboutPage } from "../components/AboutPage";
-import { DirectoryPage } from "../components/DirectoryPage";
-import { EventsPage } from "../components/EventsPage";
-import { BlogPage } from "../components/BlogPage";
-import { MembershipPage } from "../components/MembershipPage";
-import { ContactPage } from "../components/ContactPage";
-import { AdminDashboard } from "../components/AdminDashboard";
-import { Button } from "../components/ui/button";
+import Head from "next/head";
 import { Settings, Globe } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { AdminDashboard } from "../components/AdminDashboard";
 
-function AppContent() {
-  const [currentPage, setCurrentPage] = useState("home");
+function AppContent({ children }: { children: React.ReactNode }) {
+  // Register service worker for PWA
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+  }, []);
+
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [language, setLanguage] = useState("en");
   const { user } = useAuth();
 
-  const handlePageChange = (page: string) => {
-    setCurrentPage(page);
-  };
-
   const handleAdminAccess = () => {
-    // Check if user has admin role
     setShowAdminDashboard(true);
   };
 
@@ -33,39 +30,12 @@ function AppContent() {
     // In a real app, this would trigger translation system
   };
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case "home":
-        return <HomePage onPageChange={handlePageChange} />;
-      case "about":
-      case "past-presidents":
-      case "board":
-      case "resources":
-        return <AboutPage />;
-      case "directory":
-        return <DirectoryPage />;
-      case "events":
-      case "calendar":
-      case "projects":
-      case "club-service":
-        return <EventsPage />;
-      case "blog":
-        return <BlogPage />;
-      case "membership":
-        return <MembershipPage />;
-      case "contact":
-        return <ContactPage />;
-      default:
-        return <HomePage onPageChange={handlePageChange} />;
-    }
-  };
-
   if (showAdminDashboard) {
     return <AdminDashboard onClose={() => setShowAdminDashboard(false)} />;
   }
 
   return (
-    <Layout currentPage={currentPage} onPageChange={handlePageChange}>
+    <Layout>
       {/* Admin Access Button for Authenticated Users */}
       {user && (
         <div className="fixed bottom-4 right-4 z-40 flex flex-col space-y-2">
@@ -88,15 +58,22 @@ function AppContent() {
           </Button>
         </div>
       )}
-      {renderPage()}
+      {children}
     </Layout>
   );
 }
 
-export default function _app() {
+export default function MyApp({ Component, pageProps }: any) {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <>
+      <Head>
+        <link rel="manifest" href="/manifest.json" />
+      </Head>
+      <AuthProvider>
+        <AppContent>
+          <Component {...pageProps} />
+        </AppContent>
+      </AuthProvider>
+    </>
   );
 }
