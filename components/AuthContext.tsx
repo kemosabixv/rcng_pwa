@@ -95,6 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    if (!supabase) {
+      return { error: "Authentication service not configured" };
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
