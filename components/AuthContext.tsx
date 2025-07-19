@@ -125,6 +125,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     company?: string,
     phone?: string,
   ) => {
+    if (!supabase || projectId === "placeholder-project-id") {
+      return { error: "Authentication service not configured" };
+    }
+
     try {
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-b2be43be/auth/signup`,
