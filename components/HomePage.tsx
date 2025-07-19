@@ -1,9 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Calendar, MapPin, Users, Target, Globe, Heart, ChevronLeft, ChevronRight, User, ArrowRight } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import React, { useState, useEffect } from "react";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Target,
+  Globe,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+  User,
+  ArrowRight,
+} from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface HomePageProps {
   onPageChange?: (page: string) => void;
@@ -16,24 +27,30 @@ export function HomePage({ onPageChange }: HomePageProps) {
     {
       title: "Welcome to Rotary Club of Nairobi Gigiri",
       subtitle: "Service Above Self",
-      description: "Join us in making a positive impact in our community and around the world through service, friendship, and professional development.",
-      image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&h=600",
-      cta: "Learn More About Us"
+      description:
+        "Join us in making a positive impact in our community and around the world through service, friendship, and professional development.",
+      image:
+        "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&h=600",
+      cta: "Learn More About Us",
     },
     {
       title: "Make a Difference Today",
       subtitle: "Community Service",
-      description: "From local food drives to international water projects, we're committed to creating lasting change through meaningful service.",
-      image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1200&h=600",
-      cta: "View Our Projects"
+      description:
+        "From local food drives to international water projects, we're committed to creating lasting change through meaningful service.",
+      image:
+        "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1200&h=600",
+      cta: "View Our Projects",
     },
     {
       title: "Join Our Fellowship",
       subtitle: "Become a Member",
-      description: "Connect with like-minded professionals who share your passion for service and making a positive impact.",
-      image: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&h=600",
-      cta: "Become a Member"
-    }
+      description:
+        "Connect with like-minded professionals who share your passion for service and making a positive impact.",
+      image:
+        "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&h=600",
+      cta: "Become a Member",
+    },
   ];
 
   const speakers = [
@@ -41,43 +58,50 @@ export function HomePage({ onPageChange }: HomePageProps) {
       name: "Dr. Sarah Johnson",
       topic: "Global Water Crisis Solutions",
       date: "March 15, 2025",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b1e0?auto=format&fit=crop&w=150&h=150"
+      image:
+        "https://images.unsplash.com/photo-1494790108755-2616b612b1e0?auto=format&fit=crop&w=150&h=150",
     },
     {
       name: "Mark Thompson",
       topic: "Community Economic Development",
       date: "March 22, 2025",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150"
+      image:
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150",
     },
     {
       name: "Prof. Lisa Chen",
       topic: "Youth Leadership Programs",
       date: "March 29, 2025",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&h=150"
-    }
+      image:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&h=150",
+    },
   ];
 
   const goals = [
     {
       icon: <Heart className="h-8 w-8 text-red-600" />,
       title: "Promote Peace",
-      description: "Foster understanding and peaceful relationships between communities worldwide."
+      description:
+        "Foster understanding and peaceful relationships between communities worldwide.",
     },
     {
       icon: <Target className="h-8 w-8 text-blue-600" />,
       title: "Fight Disease",
-      description: "Work to prevent and treat diseases while improving access to healthcare."
+      description:
+        "Work to prevent and treat diseases while improving access to healthcare.",
     },
     {
       icon: <Users className="h-8 w-8 text-green-600" />,
       title: "Support Education",
-      description: "Increase literacy rates and expand access to quality education for all."
+      description:
+        "Increase literacy rates and expand access to quality education for all.",
     },
     {
       icon: <Globe className="h-8 w-8 text-purple-600" />,
       title: "Grow Local Economies",
-      description: "Create opportunities for economic and community development."
-    }
+      description:
+        "Create opportunities for economic and community development.",
+    },
   ];
 
   useEffect(() => {
@@ -104,7 +128,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
             <div
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
+                index === currentSlide ? "opacity-100" : "opacity-0"
               }`}
             >
               <ImageWithFallback
@@ -115,10 +139,24 @@ export function HomePage({ onPageChange }: HomePageProps) {
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-white max-w-4xl px-4">
-                  <Badge className="mb-4 bg-red-600 text-white">{slide.subtitle}</Badge>
-                  <h1 className="text-4xl md:text-6xl font-bold mb-4">{slide.title}</h1>
-                  <p className="text-xl mb-8 max-w-2xl mx-auto">{slide.description}</p>
-                  <Button size="lg" className="bg-red-600 hover:bg-red-700">
+                  <Badge
+                    className="mb-4 text-white"
+                    style={{ backgroundColor: "#1a73eb" }}
+                  >
+                    {slide.subtitle}
+                  </Badge>
+                  <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                    {slide.title}
+                  </h1>
+                  <p className="text-xl mb-8 max-w-2xl mx-auto">
+                    {slide.description}
+                  </p>
+                  <Button
+                    size="lg"
+                    className="text-white hover:opacity-90"
+                    style={{ backgroundColor: "#1a73eb" }}
+                    onClick={() => onPageChange?.("about")}
+                  >
                     {slide.cta}
                   </Button>
                 </div>
@@ -126,7 +164,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
             </div>
           ))}
         </div>
-        
+
         {/* Slider Controls */}
         <button
           onClick={prevSlide}
@@ -148,7 +186,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
               key={index}
               onClick={() => setCurrentSlide(index)}
               className={`w-3 h-3 rounded-full ${
-                index === currentSlide ? 'bg-white' : 'bg-white/50'
+                index === currentSlide ? "bg-white" : "bg-white/50"
               }`}
             />
           ))}
@@ -163,27 +201,42 @@ export function HomePage({ onPageChange }: HomePageProps) {
             <section>
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold mb-4">The Four-Way Test</h2>
-                <p className="text-muted-foreground">Of the things we think, say or do</p>
+                <p className="text-muted-foreground">
+                  Of the things we think, say or do
+                </p>
               </div>
-              <div className="bg-red-600 text-white p-8 rounded-lg">
+              <div
+                className="text-white p-8 rounded-lg"
+                style={{ backgroundColor: "#f89c13" }}
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
-                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">1</span>
+                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                        1
+                      </span>
                       <span>Is it the TRUTH?</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">2</span>
+                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                        2
+                      </span>
                       <span>Is it FAIR to all concerned?</span>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
-                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">3</span>
-                      <span>Will it build GOODWILL and BETTER FRIENDSHIPS?</span>
+                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                        3
+                      </span>
+                      <span>
+                        Will it build GOODWILL and BETTER FRIENDSHIPS?
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">4</span>
+                      <span className="bg-white text-red-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                        4
+                      </span>
                       <span>Will it be BENEFICIAL to all concerned?</span>
                     </div>
                   </div>
@@ -196,10 +249,13 @@ export function HomePage({ onPageChange }: HomePageProps) {
               <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-none">
                 <CardContent className="pt-8">
                   <h2 className="text-3xl font-bold mb-4">2024-25 Theme</h2>
-                  <h3 className="text-2xl text-blue-600 mb-6">"The Magic of Rotary"</h3>
+                  <h3 className="text-2xl text-blue-600 mb-6">
+                    "The Magic of Rotary"
+                  </h3>
                   <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    This year we focus on the transformative power of Rotary's service, 
-                    creating positive change through our collective efforts and dedication.
+                    This year we focus on the transformative power of Rotary's
+                    service, creating positive change through our collective
+                    efforts and dedication.
                   </p>
                 </CardContent>
               </Card>
@@ -210,7 +266,9 @@ export function HomePage({ onPageChange }: HomePageProps) {
               <Card className="border-2 border-red-200 bg-red-50">
                 <CardContent className="pt-8">
                   <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-6">Join Us for Our Weekly Meetings</h2>
+                    <h2 className="text-3xl font-bold mb-6">
+                      Join Us for Our Weekly Meetings
+                    </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                       <div className="flex items-center justify-center space-x-3">
                         <Calendar className="h-6 w-6 text-red-600" />
@@ -233,19 +291,24 @@ export function HomePage({ onPageChange }: HomePageProps) {
             <section>
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold mb-4">Our Areas of Focus</h2>
-                <p className="text-muted-foreground">Rotary's commitment to creating positive change</p>
+                <p className="text-muted-foreground">
+                  Rotary's commitment to creating positive change
+                </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {goals.map((goal, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={index}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardContent className="pt-6">
                       <div className="flex items-start space-x-4">
-                        <div className="flex-shrink-0">
-                          {goal.icon}
-                        </div>
+                        <div className="flex-shrink-0">{goal.icon}</div>
                         <div>
                           <h3 className="font-semibold mb-2">{goal.title}</h3>
-                          <p className="text-muted-foreground">{goal.description}</p>
+                          <p className="text-muted-foreground">
+                            {goal.description}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -259,26 +322,45 @@ export function HomePage({ onPageChange }: HomePageProps) {
               <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
                 <CardContent className="pt-8">
                   <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-4">The Rotary Foundation</h2>
+                    <h2 className="text-3xl font-bold mb-4">
+                      The Rotary Foundation
+                    </h2>
                     <p className="text-lg text-muted-foreground mb-6 max-w-3xl mx-auto">
-                      Our Foundation enables Rotarians to advance world understanding, goodwill, and peace 
-                      through the improvement of health, the support of education, and the alleviation of poverty.
+                      Our Foundation enables Rotarians to advance world
+                      understanding, goodwill, and peace through the improvement
+                      of health, the support of education, and the alleviation
+                      of poverty.
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-orange-600">$4B+</div>
-                        <div className="text-sm text-muted-foreground">Invested in communities</div>
+                        <div className="text-3xl font-bold text-orange-600">
+                          $4B+
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Invested in communities
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-orange-600">100+</div>
-                        <div className="text-sm text-muted-foreground">Countries served</div>
+                        <div className="text-3xl font-bold text-orange-600">
+                          100+
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Countries served
+                        </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-orange-600">2.5B+</div>
-                        <div className="text-sm text-muted-foreground">Children protected from polio</div>
+                        <div className="text-3xl font-bold text-orange-600">
+                          2.5B+
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Children protected from polio
+                        </div>
                       </div>
                     </div>
-                    <Button variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-50">
+                    <Button
+                      variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    >
                       Learn More About TRF
                     </Button>
                   </div>
@@ -298,7 +380,10 @@ export function HomePage({ onPageChange }: HomePageProps) {
               </CardHeader>
               <CardContent className="space-y-6">
                 {speakers.map((speaker, index) => (
-                  <div key={index} className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0">
+                  <div
+                    key={index}
+                    className="border-b border-gray-200 last:border-b-0 pb-4 last:pb-0"
+                  >
                     <div className="flex items-start space-x-3">
                       <ImageWithFallback
                         src={speaker.image}
@@ -306,18 +391,22 @@ export function HomePage({ onPageChange }: HomePageProps) {
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-sm">{speaker.name}</h4>
-                        <p className="text-xs text-muted-foreground mb-1">{speaker.topic}</p>
+                        <h4 className="font-semibold text-sm">
+                          {speaker.name}
+                        </h4>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          {speaker.topic}
+                        </p>
                         <p className="text-xs text-red-600">{speaker.date}</p>
                       </div>
                     </div>
                   </div>
                 ))}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="w-full"
-                  onClick={() => onPageChange('events')}
+                  onClick={() => onPageChange("events")}
                 >
                   View All Speakers
                   <ArrowRight className="h-4 w-4 ml-2" />
