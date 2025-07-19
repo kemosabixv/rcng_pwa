@@ -364,6 +364,12 @@ export function HomePage({ onPageChange }: HomePageProps) {
                     <Button
                       variant="outline"
                       className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() =>
+                        window.open(
+                          "https://www.rotary.org/en/about-rotary/rotary-foundation",
+                          "_blank",
+                        )
+                      }
                     >
                       Learn More About TRF
                     </Button>
