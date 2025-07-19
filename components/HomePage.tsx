@@ -247,7 +247,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
             {/* Yearly Theme */}
             <section className="text-center">
               <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-none">
-                <CardContent className="pt-8">
+                <CardContent className="pt-8 mb-px">
                   <h2 className="text-3xl font-bold mb-4">2024-25 Theme</h2>
                   <h3 className="text-2xl text-blue-600 mb-6">
                     "The Magic of Rotary"
