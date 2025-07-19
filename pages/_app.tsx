@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/globals.css';
 import { AuthProvider, useAuth } from '../components/AuthContext';
 import { Layout } from '../components/Layout';
 import { HomePage } from '../components/HomePage';
