@@ -39,7 +39,7 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
         { name: "Resources", href: "resources" },
       ],
     },
-    { name: "DIRECTORY", href: "directory", requiresAuth: true },
+    { name: "MEMBERS", href: "directory" },
     {
       name: "EVENTS",
       href: "events",
