@@ -28,30 +28,26 @@ export function Layout({ children }: LayoutProps) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
 
-  const navigation = [
-    { name: "HOME", href: "home" },
+  type NavigationItem = {
+    name: string;
+    href?: string;
+    dropdown?: { name: string; href: string }[];
+  };
+
+  const navigation: NavigationItem[] = [
+    { name: "Home", href: "" },
     {
-      name: "ABOUT",
+      name: "About",
       href: "about",
       dropdown: [
         { name: "Who We Are", href: "about" },
-        { name: "Past Presidents", href: "past-presidents" },
-        { name: "Directors/Board", href: "board" },
         { name: "Resources", href: "resources" },
       ],
     },
-    { name: "MEMBERS", href: "directory" },
-    {
-      name: "EVENTS",
-      href: "events",
-      dropdown: [
-        { name: "Calendar", href: "calendar" },
-        { name: "Projects", href: "projects" },
-        { name: "Club Service", href: "club-service" },
-      ],
-    },
-    { name: "BLOG", href: "blog" },
-    { name: "BECOME A MEMBER", href: "membership" },
+    { name: "Our Members", href: "directory" },
+    { name: "Events",href: "events"},
+    { name: "Blog", href: "blog" },
+    { name: "Join", href: "membership" },
   ];
 
   const handleAuthClick = () => {
@@ -62,14 +58,6 @@ export function Layout({ children }: LayoutProps) {
     }
   };
 
-  const handleNavClick = (href: string, requiresAuth?: boolean) => {
-    if (requiresAuth && !user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-    // onPageChange(href);
-    setIsMobileMenuOpen(false);
-  };
 
   return (
     <div className="min-h-screen bg-background">
