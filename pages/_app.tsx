@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { AuthProvider, useAuth } from '../components/AuthContext';
-import { Layout } from '../components/Layout';
-import { HomePage } from '../components/HomePage';
-import { AboutPage } from '../components/AboutPage';
-import { DirectoryPage } from '../components/DirectoryPage';
-import { EventsPage } from '../components/EventsPage';
-import { BlogPage } from '../components/BlogPage';
-import { MembershipPage } from '../components/MembershipPage';
-import { AdminDashboard } from '../components/AdminDashboard';
-import { Button } from '../components/ui/button';
-import { Settings, Globe } from 'lucide-react';
+import React, { useState } from "react";
+import "../styles/globals.css";
+import { AuthProvider, useAuth } from "../components/AuthContext";
+import { Layout } from "../components/Layout";
+import { HomePage } from "../components/HomePage";
+import { AboutPage } from "../components/AboutPage";
+import { DirectoryPage } from "../components/DirectoryPage";
+import { EventsPage } from "../components/EventsPage";
+import { BlogPage } from "../components/BlogPage";
+import { MembershipPage } from "../components/MembershipPage";
+import { AdminDashboard } from "../components/AdminDashboard";
+import { Button } from "../components/ui/button";
+import { Settings, Globe } from "lucide-react";
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState("home");
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState("en");
   const { user } = useAuth();
 
   const handlePageChange = (page: string) => {
@@ -27,29 +28,29 @@ function AppContent() {
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'es' : 'en');
+    setLanguage(language === "en" ? "es" : "en");
     // In a real app, this would trigger translation system
   };
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'home':
+      case "home":
         return <HomePage onPageChange={handlePageChange} />;
-      case 'about':
-      case 'past-presidents':
-      case 'board':
-      case 'resources':
+      case "about":
+      case "past-presidents":
+      case "board":
+      case "resources":
         return <AboutPage />;
-      case 'directory':
+      case "directory":
         return <DirectoryPage />;
-      case 'events':
-      case 'calendar':
-      case 'projects':
-      case 'club-service':
+      case "events":
+      case "calendar":
+      case "projects":
+      case "club-service":
         return <EventsPage />;
-      case 'blog':
+      case "blog":
         return <BlogPage />;
-      case 'membership':
+      case "membership":
         return <MembershipPage />;
       default:
         return <HomePage onPageChange={handlePageChange} />;
@@ -72,7 +73,7 @@ function AppContent() {
             className="bg-white shadow-lg"
           >
             <Globe className="w-4 h-4 mr-2" />
-            {language === 'en' ? 'ES' : 'EN'}
+            {language === "en" ? "ES" : "EN"}
           </Button>
           <Button
             onClick={handleAdminAccess}
