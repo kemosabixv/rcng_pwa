@@ -279,7 +279,11 @@ export function HomePage({ onPageChange }: HomePageProps) {
                         <span>Downtown Community Center</span>
                       </div>
                     </div>
-                    <Button size="lg" className="bg-red-600 hover:bg-red-700">
+                    <Button
+                      size="lg"
+                      className="bg-red-600 hover:bg-red-700"
+                      onClick={() => onPageChange?.("contact")}
+                    >
                       Get Directions & RSVP
                     </Button>
                   </div>
