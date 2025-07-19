@@ -83,8 +83,8 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Phone className="h-4 w-4" />
-              <span className="text-sm">+254 700 123 456</span>
+              <Phone className="h-4 w-4 text-white" />
+              <span className="text-sm text-white">+254 700 123 456</span>
             </div>
           </div>
           <div className="flex items-center space-x-4">
