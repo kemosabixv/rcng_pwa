@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription } from './ui/alert';
-import { Loader2, Mail, Lock, User, Phone, Building2 } from 'lucide-react';
-import { useAuth } from './AuthContext';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Loader2, Mail, Lock } from "lucide-react";
+import { useAuth } from "./AuthContext";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,72 +21,81 @@ interface LoginModalProps {
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { signIn, signUp } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
 
   // Signup form state
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [profession, setProfession] = useState('');
-  const [company, setCompany] = useState('');
-  const [phone, setPhone] = useState('');
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [profession, setProfession] = useState("");
+  const [company, setCompany] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     const result = await signIn(loginEmail, loginPassword);
-    
+
     if (result.error) {
       setError(result.error);
     } else {
       onClose();
     }
-    
+
     setLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     if (signupPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     if (signupPassword.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError("Password must be at least 6 characters long");
       setLoading(false);
       return;
     }
 
-    const result = await signUp(signupEmail, signupPassword, name, profession, company, phone);
-    
+    const result = await signUp(
+      signupEmail,
+      signupPassword,
+      name,
+      profession,
+      company,
+      phone,
+    );
+
     if (result.error) {
       setError(result.error);
     } else {
-      setSuccess('Account created successfully! Please sign in with your new credentials.');
+      setSuccess(
+        "Account created successfully! Please sign in with your new credentials.",
+      );
       // Clear form
-      setSignupEmail('');
-      setSignupPassword('');
-      setConfirmPassword('');
-      setName('');
-      setProfession('');
-      setCompany('');
-      setPhone('');
+      setSignupEmail("");
+      setSignupPassword("");
+      setConfirmPassword("");
+      setName("");
+      setProfession("");
+      setCompany("");
+      setPhone("");
     }
-    
+
     setLoading(false);
   };
 
@@ -91,7 +105,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <DialogHeader>
           <DialogTitle>Member Access</DialogTitle>
           <DialogDescription>
-            Sign in to your existing account or create a new member account to access exclusive content.
+            Sign in to your existing account or create a new member account to
+            access exclusive content.
           </DialogDescription>
         </DialogHeader>
 
@@ -104,12 +119,16 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <TabsContent value="login">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Sign In to Your Account</CardTitle>
+                <CardTitle className="text-lg">
+                  Sign In to Your Account
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Email
+                    </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -124,7 +143,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Password</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Password
+                    </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -145,7 +166,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   )}
 
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {loading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     Sign In
                   </Button>
                 </form>
@@ -161,7 +184,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <CardContent>
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Full Name *</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Full Name *
+                    </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -176,7 +201,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email *</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Email *
+                    </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -192,7 +219,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Password *</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Password *
+                      </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -206,7 +235,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Confirm *</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Confirm *
+                      </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -222,7 +253,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Phone</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Phone
+                    </label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -236,7 +269,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Profession</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Profession
+                    </label>
                     <Input
                       type="text"
                       placeholder="Your profession"
@@ -246,7 +281,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Company</label>
+                    <label className="block text-sm font-medium mb-2">
+                      Company
+                    </label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -272,7 +309,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   )}
 
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {loading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     Create Account
                   </Button>
                 </form>
