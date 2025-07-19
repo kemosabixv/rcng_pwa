@@ -330,6 +330,14 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                     Join Us
                   </button>
                 </li>
+                <li>
+                  <button
+                    onClick={() => onPageChange("contact")}
+                    className="text-primary-foreground/80 hover:text-primary-foreground"
+                  >
+                    Contact Us
+                  </button>
+                </li>
               </ul>
             </div>
             <div>
