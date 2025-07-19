@@ -1,7 +1,13 @@
 let projectId: string | undefined;
 let publicAnonKey: string | undefined;
+
+// Use a custom env variable to detect Deno Deploy
+if (
 // @ts-ignore
-if (Deno.env.get('NEXT_PUBLIC_DENO_ENV') === 'true') {
+  typeof Deno !== 'undefined' &&
+  // @ts-ignore
+  Deno.env.get('NEXT_PUBLIC_DENO_ENV') === 'true'
+) {
   // Deno Deploy environment
   // @ts-ignore
   projectId = Deno.env.get('NEXT_PUBLIC_SUPABASE_PROJECT_ID');
