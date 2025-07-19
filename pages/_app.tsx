@@ -8,6 +8,7 @@ import { DirectoryPage } from "../components/DirectoryPage";
 import { EventsPage } from "../components/EventsPage";
 import { BlogPage } from "../components/BlogPage";
 import { MembershipPage } from "../components/MembershipPage";
+import { ContactPage } from "../components/ContactPage";
 import { AdminDashboard } from "../components/AdminDashboard";
 import { Button } from "../components/ui/button";
 import { Settings, Globe } from "lucide-react";
