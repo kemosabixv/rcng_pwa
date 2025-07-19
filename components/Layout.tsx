@@ -274,7 +274,16 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
       <main>{children}</main>
 
       {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-12 mt-16">
+      <footer
+        className="py-12 mt-16"
+        style={{
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+          boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
