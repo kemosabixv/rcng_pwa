@@ -397,7 +397,9 @@ export function HomePage({ onPageChange }: HomePageProps) {
                         <p className="text-xs text-muted-foreground mb-1">
                           {speaker.topic}
                         </p>
-                        <p className="text-xs text-red-600">{speaker.date}</p>
+                        <p className="text-xs" style={{ color: "#254998" }}>
+                          {speaker.date}
+                        </p>
                       </div>
                     </div>
                   </div>
