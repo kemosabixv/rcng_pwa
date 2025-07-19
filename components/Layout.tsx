@@ -100,18 +100,18 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-primary-foreground hover:bg-primary/80"
+                className="text-white hover:bg-white/20"
                 onClick={handleAuthClick}
               >
                 {user ? (
                   <>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
+                    <LogOut className="h-4 w-4 mr-2 text-white" />
+                    <span className="text-white">Sign Out</span>
                   </>
                 ) : (
                   <>
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Login
+                    <LogIn className="h-4 w-4 mr-2 text-white" />
+                    <span className="text-white">Login</span>
                   </>
                 )}
               </Button>
