@@ -20,8 +20,6 @@ import Link from "next/link";
 // Remove currentPage and onPageChange from LayoutProps
 interface LayoutProps {
   children: React.ReactNode;
-  currentPage: string;
-  onPageChange: (page: string) => void;
 }
 
 // Update navigation links to use Next.js routing

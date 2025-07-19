@@ -140,7 +140,7 @@ interface Analytics {
 }
 
 export function AdminDashboard({ onClose }: AdminDashboardProps) {
-  const { user } = useAuth();
+  const { user, session } = useAuth(); // <-- Get session here
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -218,19 +218,18 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
   };
 
   const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
+    const accessToken = session?.access_token;
     const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${publicAnonKey}`,
+        'Authorization': `Bearer ${accessToken}`,
         ...options.headers,
       },
     });
-
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
     return response.json();
   };
 

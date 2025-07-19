@@ -6,7 +6,14 @@ import React, {
   ReactNode,
 } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { projectId, publicAnonKey } from "../utils/supabase/info";
+const projectId = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID ?? "";
+const publicAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+
+if (!projectId || !publicAnonKey) {
+  throw new Error("Supabase environment variables are not set.");
+}
+
+const supabase = createClient(`https://${projectId}.supabase.co`, publicAnonKey);
 
 interface User {
   id: string;
@@ -38,7 +45,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Create a mock client if environment variables are not properly configured
-const supabase =
+const client =
+  projectId &&
+  publicAnonKey &&
   projectId !== "placeholder-project-id" &&
   publicAnonKey !== "placeholder-anon-key"
     ? createClient(`https://${projectId}.supabase.co`, publicAnonKey)
@@ -50,13 +59,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!supabase) {
+    if (!client) {
       setLoading(false);
       return;
     }
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+    client.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
       if (initialSession?.user) {
         setUser({
@@ -74,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+    } = client.auth.onAuthStateChange(async (event, currentSession) => {
       setSession(currentSession);
       if (currentSession?.user) {
         setUser({
@@ -95,12 +104,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    if (!supabase) {
+    if (!client) {
       return { error: "Authentication service not configured" };
     }
 
+    // Log credentials used for debugging
+    console.log("Attempting sign in with:", { email, password });
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await client.auth.signInWithPassword({
         email,
         password,
       });
@@ -125,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     company?: string,
     phone?: string,
   ) => {
-    if (!supabase || projectId === "placeholder-project-id") {
+    if (!client || projectId === "placeholder-project-id") {
       return { error: "Authentication service not configured" };
     }
 
@@ -164,8 +176,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    if (supabase) {
-      await supabase.auth.signOut();
+    if (client) {
+      await client.auth.signOut();
     }
   };
 
