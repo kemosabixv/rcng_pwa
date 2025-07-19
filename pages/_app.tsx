@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../styles/globals.css";
 import { AuthProvider, useAuth } from "../components/AuthContext";
 import { Layout } from "../components/Layout";
@@ -8,14 +8,6 @@ import { Button } from "../components/ui/button";
 import { AdminDashboard } from "../components/AdminDashboard";
 
 function AppContent({ children }: { children: React.ReactNode }) {
-  // Register service worker for PWA
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js');
-      });
-    }
-  }, []);
 
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [language, setLanguage] = useState("en");
