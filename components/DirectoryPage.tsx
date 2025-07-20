@@ -168,17 +168,17 @@ export function DirectoryPage() {
           </div>
 
           {/* Preview Members */}
-          <div className="mt-12">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold mb-4">
+          <div className="mt-8 sm:mt-12">
+            <div className="text-center mb-6 sm:mb-8">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4">
                 Meet Some of Our Members
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 A glimpse into our diverse professional community
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {mockMembers.map((member, index) => (
                 <Card key={member.id} className="opacity-75 cursor-not-allowed">
                   <CardContent className="pt-6">
