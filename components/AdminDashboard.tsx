@@ -51,6 +51,7 @@ import {
   BarChart3,
   PieChart,
   LineChart,
+  X,
 } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
