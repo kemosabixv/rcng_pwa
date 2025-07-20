@@ -537,16 +537,70 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="committees">Committees</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="dues">Dues</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="quotations">Quotations</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          </TabsList>
+          <div className="mb-6">
+            {/* Mobile tabs - dropdown selector */}
+            <div className="sm:hidden">
+              <Select value={activeTab} onValueChange={setActiveTab}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Tab" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="overview">📊 Overview</SelectItem>
+                  <SelectItem value="members">👥 Members</SelectItem>
+                  <SelectItem value="committees">🏛️ Committees</SelectItem>
+                  <SelectItem value="projects">📋 Projects</SelectItem>
+                  <SelectItem value="dues">💰 Dues</SelectItem>
+                  <SelectItem value="documents">📄 Documents</SelectItem>
+                  <SelectItem value="quotations">📝 Quotations</SelectItem>
+                  <SelectItem value="analytics">📈 Analytics</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Tablet tabs - 4 columns, 2 rows */}
+            <div className="hidden sm:grid md:hidden grid-cols-4 gap-1 p-1">
+              <TabsList className="grid grid-cols-4 gap-1">
+                <TabsTrigger value="overview" className="text-xs p-2">
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger value="members" className="text-xs p-2">
+                  Members
+                </TabsTrigger>
+                <TabsTrigger value="committees" className="text-xs p-2">
+                  Committees
+                </TabsTrigger>
+                <TabsTrigger value="projects" className="text-xs p-2">
+                  Projects
+                </TabsTrigger>
+              </TabsList>
+              <TabsList className="grid grid-cols-4 gap-1 mt-1">
+                <TabsTrigger value="dues" className="text-xs p-2">
+                  Dues
+                </TabsTrigger>
+                <TabsTrigger value="documents" className="text-xs p-2">
+                  Documents
+                </TabsTrigger>
+                <TabsTrigger value="quotations" className="text-xs p-2">
+                  Quotations
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="text-xs p-2">
+                  Analytics
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Desktop tabs - single row */}
+            <TabsList className="hidden md:grid w-full grid-cols-8">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="members">Members</TabsTrigger>
+              <TabsTrigger value="committees">Committees</TabsTrigger>
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="dues">Dues</TabsTrigger>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="quotations">Quotations</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
