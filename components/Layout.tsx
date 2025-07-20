@@ -226,7 +226,10 @@ export function Layout({ children }: LayoutProps) {
                 {navigation.map((item) => (
                   <div key={item.name}>
                     <Link href={`/${item.href}`}>
-                      <span className="block w-full text-left py-3 px-3 rounded-md transition-colors text-gray-700 hover:bg-gray-100 cursor-pointer text-sm sm:text-base">
+                      <span
+                        className="block w-full text-left py-3 px-3 rounded-md transition-colors text-gray-700 hover:bg-gray-100 cursor-pointer text-sm sm:text-base"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         {item.name}
                       </span>
                     </Link>
@@ -234,7 +237,10 @@ export function Layout({ children }: LayoutProps) {
                       <div className="ml-4 space-y-1 border-l-2 border-gray-200 pl-3">
                         {item.dropdown.map((subItem) => (
                           <Link key={subItem.name} href={`/${subItem.href}`}>
-                            <span className="block w-full text-left py-2 px-3 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer">
+                            <span
+                              className="block w-full text-left py-2 px-3 text-xs sm:text-sm text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
                               {subItem.name}
                             </span>
                           </Link>
