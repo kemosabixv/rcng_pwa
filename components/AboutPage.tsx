@@ -76,10 +76,12 @@ export function AboutPage() {
     <div className="min-h-screen py-8 sm:py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <Badge className="mb-4 bg-red-600 text-white">About Us</Badge>
-          <h1 className="text-4xl font-bold mb-6">Who We Are</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
+            Who We Are
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Founded on the principles of service, fellowship, diversity,
             integrity, and leadership, our Rotary Club has been serving the
             community for over 50 years.
