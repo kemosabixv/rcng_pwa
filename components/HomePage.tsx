@@ -142,7 +142,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
               />
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white max-w-4xl px-4">
+                <div className="text-center text-white max-w-4xl px-4 flex flex-col justify-center items-center min-h-full">
                   <Badge
                     className="mb-4 text-white"
                     style={{ backgroundColor: "#1a73eb" }}
