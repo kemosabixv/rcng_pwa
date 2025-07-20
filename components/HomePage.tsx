@@ -126,7 +126,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
   return (
     <div className="min-h-screen">
       {/* Welcome Slider */}
-      <section className="relative h-96 md:h-[500px] overflow-hidden">
+      <section className="relative h-64 sm:h-80 md:h-96 lg:h-[500px] overflow-hidden">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
@@ -422,7 +422,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
                     View All Speakers
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
-                </Link>   
+                </Link>
               </CardContent>
             </Card>
           </div>
