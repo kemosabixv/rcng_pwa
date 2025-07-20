@@ -1,3 +1,4 @@
+import { ESLINT_DEFAULT_DIRS } from 'next/dist/lib/constants';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface LocalizationContextType {
@@ -7,9 +8,12 @@ interface LocalizationContextType {
   availableLanguages: Array<{ code: string; name: string; flag: string }>;
 }
 
+type Language = keyof typeof translations; // 'en' | 'es' | 'fr'
+type TranslationKey = keyof typeof translations['en']; // 'nav.home' | 'nav.about' | ...
+
 const LocalizationContext = createContext<LocalizationContextType | undefined>(undefined);
 
-const translations = {
+const translations: Record<string, Record<string, string>> = {
   en: {
     // Navigation
     'nav.home': 'Home',
@@ -169,16 +173,19 @@ export function LocalizationProvider({ children }: LocalizationProviderProps) {
   };
 
   const t = (key: string, params?: Record<string, string>): string => {
-    const translation = translations[language as keyof typeof translations]?.[key as keyof typeof translations['en']] || key;
-    
-    if (params) {
-      return Object.entries(params).reduce((text, [param, value]) => {
-        return text.replace(`{{${param}}}`, value);
-      }, translation);
-    }
-    
-    return translation;
-  };
+  const translation = translations[language]?.[key as TranslationKey] || key;
+
+  if (params) {
+    return Object.entries(params).reduce((text, [param, value]) => {
+      return text.replace(`{{${param}}}`, value);
+    }, translation);
+  }
+
+  return translation;
+
+};
+
+
 
   const contextValue: LocalizationContextType = {
     language,

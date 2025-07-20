@@ -15,6 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import Link from "next/link";
 
 interface HomePageProps {
   onPageChange?: (page: string) => void;
@@ -32,6 +33,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
       image:
         "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&h=600",
       cta: "Learn More About Us",
+      ctaHref: "/about",
     },
     {
       title: "Make a Difference Today",
@@ -41,6 +43,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
       image:
         "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1200&h=600",
       cta: "View Our Projects",
+      ctaHref: "/projects",
     },
     {
       title: "Join Our Fellowship",
@@ -50,6 +53,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
       image:
         "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&h=600",
       cta: "Become a Member",
+      ctaHref: "/membership",
     },
   ];
 
@@ -122,7 +126,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
   return (
     <div className="min-h-screen">
       {/* Welcome Slider */}
-      <section className="relative h-96 md:h-[500px] overflow-hidden">
+      <section className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
@@ -138,27 +142,28 @@ export function HomePage({ onPageChange }: HomePageProps) {
               />
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white max-w-4xl px-4">
+                <div className="text-center text-white max-w-4xl px-4 flex flex-col justify-center items-center min-h-full">
                   <Badge
                     className="mb-4 text-white"
                     style={{ backgroundColor: "#1a73eb" }}
                   >
                     {slide.subtitle}
                   </Badge>
-                  <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4">
                     {slide.title}
                   </h1>
-                  <p className="text-xl mb-8 max-w-2xl mx-auto">
+                  <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
                     {slide.description}
                   </p>
-                  <Button
-                    size="lg"
-                    className="text-white hover:opacity-90"
-                    style={{ backgroundColor: "#1a73eb" }}
-                    onClick={() => onPageChange?.("about")}
-                  >
-                    {slide.cta}
-                  </Button>
+                  <Link href={slide.ctaHref}>
+                    <Button
+                      size="lg"
+                      className="text-white hover:opacity-90"
+                      style={{ backgroundColor: "#1a73eb" }}
+                    >
+                      {slide.cta}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -279,13 +284,11 @@ export function HomePage({ onPageChange }: HomePageProps) {
                         <span>Downtown Community Center</span>
                       </div>
                     </div>
-                    <Button
-                      size="lg"
-                      className="bg-red-600 hover:bg-red-700"
-                      onClick={() => onPageChange?.("contact")}
-                    >
-                      Get Directions & RSVP
-                    </Button>
+                    <Link href="/contact">
+                      <Button size="lg" className="bg-red-600 hover:bg-red-700">
+                        Get Directions & RSVP
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -414,15 +417,12 @@ export function HomePage({ onPageChange }: HomePageProps) {
                     </div>
                   </div>
                 ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => onPageChange("events")}
-                >
-                  View All Speakers
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+                <Link href="/events">
+                  <Button variant="outline" size="sm" className="w-full">
+                    View All Speakers
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

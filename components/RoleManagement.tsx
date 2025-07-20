@@ -234,7 +234,7 @@ export function RoleManagement() {
       return;
     }
 
-    if (role?.userCount > 0) {
+    if ((role?.userCount ?? 0) > 0) {
       setError('Cannot delete role with assigned users');
       return;
     }

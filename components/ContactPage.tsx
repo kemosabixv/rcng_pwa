@@ -58,19 +58,21 @@ export function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-16">
+    <div className="min-h-screen bg-background py-8 sm:py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+            Contact Us
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Get in touch with the Rotary Club of Nairobi Gigiri. We'd love to
             hear from you!
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Contact Information */}
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8 order-2 lg:order-1">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -130,7 +132,7 @@ export function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <Card>
+          <Card className="order-1 lg:order-2">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <MessageSquare className="h-5 w-5 text-primary" />
@@ -138,8 +140,8 @@ export function ContactPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       Name *
@@ -175,7 +177,7 @@ export function ContactPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">
                       Phone
@@ -234,7 +236,12 @@ export function ContactPage() {
                   </Alert>
                 )}
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full bg-red-600 hover:bg-red-700"
+                  disabled={loading}
+                  size="lg"
+                >
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Send Message
                 </Button>
