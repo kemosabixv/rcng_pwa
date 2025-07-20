@@ -229,27 +229,29 @@ export function DirectoryPage() {
   }
 
   return (
-    <div className="min-h-screen py-16">
+    <div className="min-h-screen py-8 sm:py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <Badge className="mb-4 bg-red-600 text-white">Directory</Badge>
-          <h1 className="text-4xl font-bold mb-6">Our Members</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
+            Our Members
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Get to know the dedicated professionals who make up our Rotary Club
             family
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-md mx-auto mb-12">
+        <div className="max-w-md mx-auto mb-8 sm:mb-12 px-4 sm:px-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search members by name, profession, or company..."
+              placeholder="Search members..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 text-sm"
             />
           </div>
         </div>
@@ -271,7 +273,7 @@ export function DirectoryPage() {
 
         {/* Stats */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
             <Card className="text-center">
               <CardContent className="pt-6">
                 <div className="text-3xl font-bold text-red-600 mb-2">
@@ -314,7 +316,7 @@ export function DirectoryPage() {
 
         {/* Members Grid */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredMembers.map((member, index) => (
               <Card
                 key={member.id}
