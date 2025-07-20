@@ -1,6 +1,27 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { createClient } from "@supabase/supabase-js";
+const projectId = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID ?? "";
+const publicAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+
+// Singleton pattern for Supabase client
+
+// Extend globalThis to include __supabaseClient
+declare global {
+  // eslint-disable-next-line no-var
+  var __supabaseClient: ReturnType<typeof createClient> | undefined;
+}
+
+let supabase: ReturnType<typeof createClient> | null = null;
+if (!globalThis.__supabaseClient && projectId && publicAnonKey) {
+  globalThis.__supabaseClient = createClient(`https://${projectId}.supabase.co`, publicAnonKey);
+}
+supabase = globalThis.__supabaseClient ?? null;
 
 interface User {
   id: string;
@@ -17,17 +38,28 @@ interface AuthContextType {
   session: any;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string, name: string, profession?: string, company?: string, phone?: string) => Promise<{ error?: string }>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    profession?: string,
+    company?: string,
+    phone?: string,
+  ) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   getAccessToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const supabase = createClient(
-  `https://${projectId}.supabase.co`,
-  publicAnonKey
-);
+// Create a mock client if environment variables are not properly configured
+const client =
+  projectId &&
+  publicAnonKey &&
+  projectId !== "placeholder-project-id" &&
+  publicAnonKey !== "placeholder-anon-key"
+    ? supabase
+    : null;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -35,13 +67,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!client) {
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+    client.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
       if (initialSession?.user) {
         setUser({
           id: initialSession.user.id,
-          email: initialSession.user.email || '',
+          email: initialSession.user.email || "",
           name: initialSession.user.user_metadata?.name,
           profession: initialSession.user.user_metadata?.profession,
           company: initialSession.user.user_metadata?.company,
@@ -52,81 +89,104 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        setSession(currentSession);
-        if (currentSession?.user) {
-          setUser({
-            id: currentSession.user.id,
-            email: currentSession.user.email || '',
-            name: currentSession.user.user_metadata?.name,
-            profession: currentSession.user.user_metadata?.profession,
-            company: currentSession.user.user_metadata?.company,
-            phone: currentSession.user.user_metadata?.phone,
-          });
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange(async (event, currentSession) => {
+      setSession(currentSession);
+      if (currentSession?.user) {
+        setUser({
+          id: currentSession.user.id,
+          email: currentSession.user.email || "",
+          name: currentSession.user.user_metadata?.name,
+          profession: currentSession.user.user_metadata?.profession,
+          company: currentSession.user.user_metadata?.company,
+          phone: currentSession.user.user_metadata?.phone,
+        });
+      } else {
+        setUser(null);
       }
-    );
+      setLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    if (!client) {
+      return { error: "Authentication service not configured" };
+    }
+
+    // Log credentials used for debugging
+    console.log("Attempting sign in with:", { email, password });
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await client.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        console.log('Sign in error:', error);
+        console.log("Sign in error:", error);
         return { error: error.message };
       }
 
       return {};
     } catch (error) {
-      console.log('Sign in error:', error);
-      return { error: 'Failed to sign in' };
+      console.log("Sign in error:", error);
+      return { error: "Failed to sign in" };
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, profession?: string, company?: string, phone?: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string,
+    profession?: string,
+    company?: string,
+    phone?: string,
+  ) => {
+    if (!client || projectId === "placeholder-project-id") {
+      return { error: "Authentication service not configured" };
+    }
+
     try {
-      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-b2be43be/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-b2be43be/auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            name,
+            profession,
+            company,
+            phone,
+          }),
         },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-          profession,
-          company,
-          phone
-        })
-      });
+      );
 
       const result = await response.json();
 
       if (!response.ok) {
-        console.log('Signup error:', result);
-        return { error: result.error || 'Failed to create account' };
+        console.log("Signup error:", result);
+        return { error: result.error || "Failed to create account" };
       }
 
       return {};
     } catch (error) {
-      console.log('Signup error:', error);
-      return { error: 'Failed to create account' };
+      console.log("Signup error:", error);
+      return { error: "Failed to create account" };
     }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    if (client) {
+      await client.auth.signOut();
+    }
   };
 
   const getAccessToken = () => {
@@ -143,17 +203,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     getAccessToken,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

@@ -10,7 +10,9 @@ CREATE TABLE kv_store_b2be43be (
 // View at https://supabase.com/dashboard/project/axiiybcvbgkmnkqcgclt/database/tables
 
 // This file provides a simple key-value interface for storing Figma Make data. It should be adequate for most small-scale use cases.
-import { createClient } from "jsr:@supabase/supabase-js@2.49.8";
+
+// @ts-nocheck
+import { createClient } from "@supabase/supabase-js";
 
 const client = () => createClient(
   Deno.env.get("SUPABASE_URL"),
