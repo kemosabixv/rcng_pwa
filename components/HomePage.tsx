@@ -23,6 +23,7 @@ interface HomePageProps {
 
 export function HomePage({ onPageChange }: HomePageProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
 
   const slides = [
     {
