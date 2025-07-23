@@ -727,7 +727,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Tab" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50">
                   <SelectItem value="overview">📊 Overview</SelectItem>
                   <SelectItem value="members">👥 Members</SelectItem>
                   <SelectItem value="committees">🏛️ Committees</SelectItem>
