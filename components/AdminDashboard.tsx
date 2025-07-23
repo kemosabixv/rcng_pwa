@@ -242,40 +242,50 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
 
   const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     const accessToken = session?.access_token;
-    //log the endpoint and options for debugging
     console.log("makeRequest called with:", { endpoint, options });
     console.log("Access Token:", accessToken);
+
     if (!accessToken) {
       throw new Error("No access token found. Please log in.");
     }
     if (!projectId || !publicAnonKey) {
       throw new Error("Supabase project ID or public anon key is not set.");
     }
+
     // Ensure the endpoint starts with a slash
     if (!endpoint.startsWith("/")) {
       endpoint = `/${endpoint}`;
     }
-    // Construct the full URL for the request
-    console.log(
-      `Making request to: https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`,
-      options,
-    );
 
-    const response = await fetch(
-      `https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`,
-      {
+    const url = `https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`;
+    console.log(`Making request to: ${url}`);
+
+    try {
+      const response = await fetch(url, {
         ...options,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
           ...options.headers,
         },
-      },
-    );
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      });
+
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          // Unable to parse error response
+        }
+        throw new Error(errorMessage);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error(`Error making request to ${endpoint}:`, error);
+      throw error;
     }
-    return response.json();
   };
 
   const loadMembers = async () => {
