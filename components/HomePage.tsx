@@ -110,11 +110,12 @@ export function HomePage({ onPageChange }: HomePageProps) {
   ];
 
   useEffect(() => {
+    const interval = userInteracted ? 15000 : 5000; // 15s if user interacted, 5s otherwise
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, interval);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides.length, userInteracted]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
