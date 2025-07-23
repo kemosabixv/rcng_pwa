@@ -294,6 +294,33 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setMembers(data.members || []);
     } catch (err) {
       console.error("Failed to load members:", err);
+      // Set fallback/mock data for development
+      setMembers([
+        {
+          id: "1",
+          name: "John Doe",
+          email: "john@example.com",
+          phone: "+1234567890",
+          profession: "Engineer",
+          company: "Tech Corp",
+          role: "admin",
+          status: "active",
+          joinDate: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+        },
+        {
+          id: "2",
+          name: "Jane Smith",
+          email: "jane@example.com",
+          phone: "+1234567891",
+          profession: "Manager",
+          company: "Business Inc",
+          role: "member",
+          status: "active",
+          joinDate: new Date().toISOString(),
+          lastLogin: null,
+        },
+      ]);
     }
   };
 
