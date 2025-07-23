@@ -296,7 +296,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/members");
       setMembers(data.members || []);
     } catch (err) {
-      console.error("Failed to load members:", err);
+      console.log("Server unavailable, using mock data for members");
       // Set fallback/mock data for development
       setMembers([
         {
