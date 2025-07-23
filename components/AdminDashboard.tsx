@@ -245,8 +245,6 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
 
   const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     const accessToken = session?.access_token;
-    console.log("makeRequest called with:", { endpoint, options });
-    console.log("Access Token:", accessToken);
 
     if (!accessToken) {
       throw new Error("No access token found. Please log in.");
@@ -261,7 +259,6 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
     }
 
     const url = `https://${projectId}.supabase.co/functions/v1/make-server-b2be43be${endpoint}`;
-    console.log(`Making request to: ${url}`);
 
     try {
       const response = await fetch(url, {
