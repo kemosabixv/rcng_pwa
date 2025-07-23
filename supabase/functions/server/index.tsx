@@ -55,18 +55,28 @@ async function checkUserRole(userId: string, requiredRole: string) {
 app.post('/make-server-b2be43be/signup', async (c) => {
   try {
     const { email, password, name, profession, company, phone } = await c.req.json();
-    
+
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       user_metadata: { name },
       email_confirm: true
     });
-    
+
     if (error) {
       return c.json({ error: error.message }, 400);
     }
-    
+
+    // Check if this is the first user (make them admin)
+    let isFirstUser = false;
+    try {
+      const existingUsers = await kv.getByPrefix('user:');
+      isFirstUser = existingUsers.length === 0;
+    } catch (kvError) {
+      console.log('Error checking existing users:', kvError);
+      isFirstUser = true; // Assume first user if KV check fails
+    }
+
     // Store user profile
     const userProfile = {
       id: data.user.id,
@@ -75,16 +85,25 @@ app.post('/make-server-b2be43be/signup', async (c) => {
       profession,
       company,
       phone,
-      role: 'member',
+      role: isFirstUser ? 'admin' : 'member',
       status: 'active',
       joinDate: new Date().toISOString(),
       lastLogin: null,
-      permissions: ['member:read']
+      permissions: isFirstUser ? ['admin:all'] : ['member:read']
     };
-    
-    await kv.set(`user:${data.user.id}`, JSON.stringify(userProfile));
-    
-    return c.json({ message: 'User created successfully', user: data.user });
+
+    try {
+      await kv.set(`user:${data.user.id}`, JSON.stringify(userProfile));
+    } catch (kvError) {
+      console.log('Error storing user profile:', kvError);
+      // Continue anyway, user is created in auth
+    }
+
+    return c.json({
+      message: 'User created successfully',
+      user: data.user,
+      isAdmin: isFirstUser
+    });
   } catch (error) {
     console.log('Signup error:', error);
     return c.json({ error: 'Internal server error during signup' }, 500);
