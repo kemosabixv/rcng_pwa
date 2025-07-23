@@ -32,18 +32,10 @@ function AppContent({ children }: { children: React.ReactNode }) {
       {user && (
         <div className="fixed bottom-4 right-4 z-40 flex flex-col space-y-2">
           <Button
-            onClick={toggleLanguage}
+            onClick={handleAdminAccess}
             size="sm"
             variant="outline"
             className="bg-white shadow-lg"
-          >
-            <Globe className="w-4 h-4 mr-2" />
-            {language === "en" ? "ES" : "EN"}
-          </Button>
-          <Button
-            onClick={handleAdminAccess}
-            size="sm"
-            className="bg-primary text-primary-foreground shadow-lg"
           >
             <Settings className="w-4 h-4 mr-2" />
             Admin Panel
