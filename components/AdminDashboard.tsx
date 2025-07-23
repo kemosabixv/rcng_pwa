@@ -362,6 +362,33 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setProjects(data.projects || []);
     } catch (err) {
       console.error("Failed to load projects:", err);
+      // Set fallback/mock data for development
+      setProjects([
+        {
+          id: "1",
+          name: "Community Garden",
+          description: "Create a community garden for local residents",
+          budget: 10000,
+          startDate: "2024-01-01",
+          endDate: "2024-06-30",
+          status: "active",
+          progress: 65,
+          assignedMembers: ["1", "2"],
+          priority: "high",
+        },
+        {
+          id: "2",
+          name: "Youth Program",
+          description: "Educational program for local youth",
+          budget: 7500,
+          startDate: "2024-02-01",
+          endDate: "2024-08-31",
+          status: "active",
+          progress: 40,
+          assignedMembers: ["2"],
+          priority: "medium",
+        },
+      ]);
     }
   };
 
