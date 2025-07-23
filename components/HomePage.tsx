@@ -126,7 +126,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
   return (
     <div className="min-h-screen">
       {/* Welcome Slider */}
-      <section className="relative h-[500px] sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
+      <section className="relative h-[300px] sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
