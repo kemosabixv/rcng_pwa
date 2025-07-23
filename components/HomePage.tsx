@@ -119,10 +119,12 @@ export function HomePage({ onPageChange }: HomePageProps) {
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setUserInteracted(true);
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setUserInteracted(true);
   };
 
   return (
