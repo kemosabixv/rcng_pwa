@@ -430,7 +430,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/documents");
       setDocuments(data.documents || []);
     } catch (err) {
-      console.error("Failed to load documents:", err);
+      console.log("Server unavailable, using mock data for documents");
       // Set fallback/mock data for development
       setDocuments([
         {
