@@ -355,7 +355,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
           <div
-            className="border-t mt-8 pt-8 text-center text-sm"
+            className="border-t mt-8 pt-8 text-center text-sm w-full absolute left-0 bottom-0 flex items-center justify-center min-h-[60px]"
             style={{
               backgroundColor: "#254998",
               color: "rgba(255, 255, 255, 1)",
