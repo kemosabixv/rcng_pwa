@@ -400,7 +400,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/dues");
       setDues(data.dues || []);
     } catch (err) {
-      console.error("Failed to load dues:", err);
+      console.log("Server unavailable, using mock data for dues");
       // Set fallback/mock data for development
       setDues([
         {
