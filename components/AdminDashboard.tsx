@@ -283,7 +283,6 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
 
       return response.json();
     } catch (error) {
-      console.error(`Error making request to ${endpoint}:`, error);
       throw error;
     }
   };
