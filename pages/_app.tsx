@@ -10,16 +10,10 @@ import { AdminDashboard } from "../components/AdminDashboard";
 function AppContent({ children }: { children: React.ReactNode }) {
 
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [language, setLanguage] = useState("en");
   const { user } = useAuth();
 
   const handleAdminAccess = () => {
     setShowAdminDashboard(true);
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(language === "en" ? "es" : "en");
-    // In a real app, this would trigger translation system
   };
 
   if (showAdminDashboard) {
