@@ -24,7 +24,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
     <Layout>
       {/* Admin Access Button for Authenticated Users */}
       {user && (
-        <div className="fixed bottom-4 right-4 z-40 flex flex-col space-y-2">
+        <div className="fixed bottom-20 right-4 z-40 flex flex-col space-y-2">
           <Button
             onClick={handleAdminAccess}
             size="sm"
