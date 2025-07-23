@@ -234,7 +234,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
         loadQuotations(),
         loadAnalytics(),
       ]);
-      setSuccess("Dashboard data loaded successfully (some data may be mock data for development)");
+      setSuccess("Dashboard loaded successfully. Note: Server backend not available - showing mock data for development. See SETUP_INSTRUCTIONS.md to enable live data.");
     } catch (err) {
       setError("Some data could not be loaded from the server. Showing mock data for development.");
       console.error("Dashboard load error:", err);
