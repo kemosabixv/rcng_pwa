@@ -330,6 +330,29 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setCommittees(data.committees || []);
     } catch (err) {
       console.error("Failed to load committees:", err);
+      // Set fallback/mock data for development
+      setCommittees([
+        {
+          id: "1",
+          name: "Finance Committee",
+          description: "Manages club finances and budgets",
+          chairperson: "John Doe",
+          members: ["1", "2"],
+          meetingSchedule: "Monthly",
+          budget: 5000,
+          status: "active",
+        },
+        {
+          id: "2",
+          name: "Events Committee",
+          description: "Organizes club events and activities",
+          chairperson: "Jane Smith",
+          members: ["2"],
+          meetingSchedule: "Bi-weekly",
+          budget: 3000,
+          status: "active",
+        },
+      ]);
     }
   };
 
