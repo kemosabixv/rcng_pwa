@@ -223,6 +223,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
 
   const loadData = async () => {
     setLoading(true);
+    setError(""); // Clear any previous errors
     try {
       await Promise.all([
         loadMembers(),
@@ -233,8 +234,10 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
         loadQuotations(),
         loadAnalytics(),
       ]);
+      setSuccess("Dashboard data loaded successfully (some data may be mock data for development)");
     } catch (err) {
-      setError("Failed to load dashboard data");
+      setError("Some data could not be loaded from the server. Showing mock data for development.");
+      console.error("Dashboard load error:", err);
     } finally {
       setLoading(false);
     }
