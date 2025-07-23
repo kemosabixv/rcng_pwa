@@ -23,6 +23,7 @@ interface HomePageProps {
 
 export function HomePage({ onPageChange }: HomePageProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
 
   const slides = [
     {
@@ -109,24 +110,27 @@ export function HomePage({ onPageChange }: HomePageProps) {
   ];
 
   useEffect(() => {
+    const interval = userInteracted ? 15000 : 5000; // 15s if user interacted, 5s otherwise
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, interval);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides.length, userInteracted]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
+    setUserInteracted(true);
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    setUserInteracted(true);
   };
 
   return (
     <div className="min-h-screen">
       {/* Welcome Slider */}
-      <section className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
+      <section className="relative h-[300px] sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
@@ -141,18 +145,18 @@ export function HomePage({ onPageChange }: HomePageProps) {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white max-w-4xl px-4 flex flex-col justify-center items-center min-h-full">
+              <div className="absolute inset-0 flex items-center justify-center pb-20 sm:pb-16">
+                <div className="text-center text-white max-w-4xl px-4 flex flex-col justify-center items-center">
                   <Badge
-                    className="mb-4 text-white"
+                    className="mb-3 sm:mb-4 text-white"
                     style={{ backgroundColor: "#1a73eb" }}
                   >
                     {slide.subtitle}
                   </Badge>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4">
                     {slide.title}
                   </h1>
-                  <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
+                  <p className="text-sm sm:text-base md:text-xl mb-4 sm:mb-6 max-w-2xl mx-auto px-2 sm:px-4">
                     {slide.description}
                   </p>
                   <Link href={slide.ctaHref}>
@@ -173,24 +177,27 @@ export function HomePage({ onPageChange }: HomePageProps) {
         {/* Slider Controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full"
+          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1.5 sm:p-2 rounded-full"
         >
-          <ChevronLeft className="h-6 w-6" />
+          <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full"
+          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1.5 sm:p-2 rounded-full"
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
 
         {/* Slider Indicators */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
           {slides.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full ${
+              onClick={() => {
+                setCurrentSlide(index);
+                setUserInteracted(true);
+              }}
+              className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${
                 index === currentSlide ? "bg-white" : "bg-white/50"
               }`}
             />

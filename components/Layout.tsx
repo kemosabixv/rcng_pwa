@@ -260,7 +260,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer */}
       <footer
-        className="py-12 mt-16"
+        className="py-12 mt-16 relative"
         style={{
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
@@ -269,7 +269,7 @@ export function Layout({ children }: LayoutProps) {
           boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pb-10 sm:pb-20">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             <div>
               <h3 className="font-semibold mb-4">
@@ -354,18 +354,18 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </div>
           </div>
-          <div
-            className="border-t mt-8 pt-8 text-center text-sm"
-            style={{
-              backgroundColor: "#254998",
-              color: "rgba(255, 255, 255, 1)",
-              borderColor: "rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <p>
-              &copy; 2025 Rotary Club of Nairobi Gigiri. All rights reserved.
-            </p>
-          </div>
+        </div>
+        <div
+          className="border-t mt-8 pt-8 text-center text-sm w-full absolute left-0 bottom-0 flex items-center justify-center min-h-[60px]"
+          style={{
+            backgroundColor: "#254998",
+            color: "rgba(255, 255, 255, 1)",
+            borderColor: "rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <p>
+            &copy; 2025 Rotary Club of Nairobi Gigiri. All rights reserved.
+          </p>
         </div>
       </footer>
 
