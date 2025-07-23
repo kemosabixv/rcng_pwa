@@ -99,11 +99,23 @@ app.get('/make-server-b2be43be/members', async (c) => {
     if (auth.error) {
       return c.json({ error: auth.error }, auth.status);
     }
-    
-    const members = await kv.getByPrefix('user:');
-    const memberList = members.map(member => JSON.parse(member));
-    
-    return c.json({ members: memberList });
+
+    try {
+      const members = await kv.getByPrefix('user:');
+      const memberList = members.map(member => {
+        try {
+          return JSON.parse(member);
+        } catch (parseError) {
+          console.log('Error parsing member data:', parseError);
+          return null;
+        }
+      }).filter(member => member !== null);
+
+      return c.json({ members: memberList });
+    } catch (kvError) {
+      console.log('KV store error:', kvError);
+      return c.json({ members: [] }); // Return empty array if KV store fails
+    }
   } catch (error) {
     console.log('Get members error:', error);
     return c.json({ error: 'Failed to fetch members' }, 500);
