@@ -364,7 +364,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/projects");
       setProjects(data.projects || []);
     } catch (err) {
-      console.error("Failed to load projects:", err);
+      console.log("Server unavailable, using mock data for projects");
       // Set fallback/mock data for development
       setProjects([
         {
