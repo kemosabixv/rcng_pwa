@@ -332,7 +332,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/committees");
       setCommittees(data.committees || []);
     } catch (err) {
-      console.error("Failed to load committees:", err);
+      console.log("Server unavailable, using mock data for committees");
       // Set fallback/mock data for development
       setCommittees([
         {
