@@ -3,7 +3,7 @@ import "../styles/globals.css";
 import { AuthProvider, useAuth } from "../components/AuthContext";
 import { Layout } from "../components/Layout";
 import Head from "next/head";
-import { Settings, Globe } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { AdminDashboard } from "../components/AdminDashboard";
 
