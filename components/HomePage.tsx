@@ -193,7 +193,10 @@ export function HomePage({ onPageChange }: HomePageProps) {
           {slides.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => {
+                setCurrentSlide(index);
+                setUserInteracted(true);
+              }}
               className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${
                 index === currentSlide ? "bg-white" : "bg-white/50"
               }`}
