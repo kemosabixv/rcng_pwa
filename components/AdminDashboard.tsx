@@ -715,6 +715,14 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
           </Alert>
         )}
 
+        <Alert className="mb-4">
+          <AlertDescription>
+            <strong>Development Mode:</strong> The dashboard is currently showing mock data.
+            To use live data, ensure the Supabase Edge Function "make-server-b2be43be" is deployed
+            and the KV store table "kv_store_b2be43be" exists in your Supabase project.
+          </AlertDescription>
+        </Alert>
+
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="mb-6">
             {/* Mobile tabs - dropdown selector */}
