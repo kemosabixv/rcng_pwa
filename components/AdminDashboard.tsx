@@ -493,7 +493,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/analytics");
       setAnalytics(data.analytics);
     } catch (err) {
-      console.error("Failed to load analytics:", err);
+      console.log("Server unavailable, using mock data for analytics");
       // Set fallback/mock data for development
       setAnalytics({
         members: {
