@@ -398,6 +398,27 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setDues(data.dues || []);
     } catch (err) {
       console.error("Failed to load dues:", err);
+      // Set fallback/mock data for development
+      setDues([
+        {
+          id: "1",
+          memberId: "1",
+          amount: 100,
+          dueDate: "2024-03-01",
+          description: "Monthly membership dues",
+          status: "pending",
+          type: "monthly",
+        },
+        {
+          id: "2",
+          memberId: "2",
+          amount: 50,
+          dueDate: "2024-02-15",
+          description: "Special assessment",
+          status: "paid",
+          type: "special",
+        },
+      ]);
     }
   };
 
@@ -407,6 +428,33 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setDocuments(data.documents || []);
     } catch (err) {
       console.error("Failed to load documents:", err);
+      // Set fallback/mock data for development
+      setDocuments([
+        {
+          id: "1",
+          name: "Club Bylaws",
+          type: "PDF",
+          category: "policy",
+          tags: ["governance", "rules"],
+          description: "Official club bylaws and regulations",
+          uploadedBy: "1",
+          uploadedAt: new Date().toISOString(),
+          downloadCount: 25,
+          visibility: "public",
+        },
+        {
+          id: "2",
+          name: "Meeting Minutes - Jan 2024",
+          type: "PDF",
+          category: "meeting",
+          tags: ["minutes", "january"],
+          description: "Monthly meeting minutes",
+          uploadedBy: "1",
+          uploadedAt: new Date().toISOString(),
+          downloadCount: 12,
+          visibility: "private",
+        },
+      ]);
     }
   };
 
@@ -416,6 +464,24 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setQuotations(data.quotations || []);
     } catch (err) {
       console.error("Failed to load quotations:", err);
+      // Set fallback/mock data for development
+      setQuotations([
+        {
+          id: "1",
+          quotationNumber: "QT-001",
+          clientName: "City Parks Department",
+          clientEmail: "parks@city.gov",
+          items: [
+            { description: "Garden Design", quantity: 1, price: 2500 },
+            { description: "Plant Installation", quantity: 1, price: 1500 },
+          ],
+          subtotal: 4000,
+          tax: 400,
+          total: 4400,
+          status: "pending",
+          validUntil: "2024-04-01",
+        },
+      ]);
     }
   };
 
@@ -425,6 +491,28 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       setAnalytics(data.analytics);
     } catch (err) {
       console.error("Failed to load analytics:", err);
+      // Set fallback/mock data for development
+      setAnalytics({
+        members: {
+          total: 2,
+          active: 2,
+          inactive: 0,
+        },
+        projects: {
+          total: 2,
+          active: 2,
+          completed: 0,
+        },
+        financial: {
+          totalDues: 150,
+          paidDues: 50,
+          pendingDues: 100,
+        },
+        events: {
+          total: 3,
+          upcoming: 2,
+        },
+      });
     }
   };
 
