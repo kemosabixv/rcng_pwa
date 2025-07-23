@@ -126,7 +126,7 @@ export function HomePage({ onPageChange }: HomePageProps) {
   return (
     <div className="min-h-screen">
       {/* Welcome Slider */}
-      <section className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
+      <section className="relative h-[500px] sm:h-96 md:h-[500px] lg:h-[600px] overflow-hidden">
         <div className="relative h-full">
           {slides.map((slide, index) => (
             <div
@@ -141,18 +141,18 @@ export function HomePage({ onPageChange }: HomePageProps) {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white max-w-4xl px-4 flex flex-col justify-center items-center min-h-full">
+              <div className="absolute inset-0 flex items-center justify-center pb-20 sm:pb-16">
+                <div className="text-center text-white max-w-4xl px-4 flex flex-col justify-center items-center">
                   <Badge
-                    className="mb-4 text-white"
+                    className="mb-3 sm:mb-4 text-white"
                     style={{ backgroundColor: "#1a73eb" }}
                   >
                     {slide.subtitle}
                   </Badge>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4">
+                  <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4">
                     {slide.title}
                   </h1>
-                  <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
+                  <p className="text-sm sm:text-base md:text-xl mb-4 sm:mb-6 max-w-2xl mx-auto px-2 sm:px-4">
                     {slide.description}
                   </p>
                   <Link href={slide.ctaHref}>
