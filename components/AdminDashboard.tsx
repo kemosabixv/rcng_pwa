@@ -466,7 +466,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
       const data = await makeRequest("/quotations");
       setQuotations(data.quotations || []);
     } catch (err) {
-      console.error("Failed to load quotations:", err);
+      console.log("Server unavailable, using mock data for quotations");
       // Set fallback/mock data for development
       setQuotations([
         {
