@@ -1,0 +1,1133 @@
+swagger: '2.0'
+info:
+  title: Projects API
+  description: |
+    This API handles the management of projects in the RCNG system.
+    It allows creating, updating, and tracking projects, tasks, and related activities.
+  version: 1.0.0
+  contact:
+    name: RCNG Support
+    email: support@rcng.example.com
+  license:
+    name: Proprietary
+    url: https://rcng.example.com/license
+
+host: api.rcng.example.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+
+definitions:
+  Project:
+    type: object
+    required:
+      - title
+      - description
+      - start_date
+      - status
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      title:
+        type: string
+        maxLength: 255
+        example: "Community Water Project"
+      description:
+        type: string
+        example: "Installation of water purification systems in local schools"
+      start_date:
+        type: string
+        format: date
+        example: "2023-03-01"
+      end_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2023-12-31"
+      status:
+        type: string
+        enum: [planning, in_progress, on_hold, completed, cancelled]
+        example: "planning"
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+        example: "high"
+      budget:
+        type: number
+        format: float
+        minimum: 0
+        example: 50000.00
+      spent_amount:
+        type: number
+        format: float
+        readOnly: true
+        example: 12500.00
+      progress:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+        example: 25
+      latitude:
+        type: number
+        format: float
+        example: -1.2921
+      longitude:
+        type: number
+        format: float
+        example: 36.8219
+      location_name:
+        type: string
+        example: "Nairobi County"
+      committee_id:
+        type: integer
+        format: int64
+        nullable: true
+        example: 3
+      created_by:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      updated_by:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-02-15T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-02-20T11:30:00Z"
+      committee:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 3
+          name:
+            type: string
+            example: "Community Service"
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/Task'
+      members:
+        type: array
+        items:
+          $ref: '#/definitions/ProjectMember'
+      documents:
+        type: array
+        items:
+          $ref: '#/definitions/ProjectDocument'
+
+  ProjectCreate:
+    type: object
+    required:
+      - title
+      - description
+      - start_date
+      - status
+    properties:
+      title:
+        type: string
+        maxLength: 255
+        example: "Community Water Project"
+      description:
+        type: string
+        example: "Installation of water purification systems in local schools"
+      start_date:
+        type: string
+        format: date
+        example: "2023-03-01"
+      end_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2023-12-31"
+      status:
+        type: string
+        enum: [planning, in_progress, on_hold, completed, cancelled]
+        example: "planning"
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+        example: "high"
+      budget:
+        type: number
+        format: float
+        minimum: 0
+        example: 50000.00
+      latitude:
+        type: number
+        format: float
+        example: -1.2921
+      longitude:
+        type: number
+        format: float
+        example: 36.8219
+      location_name:
+        type: string
+        example: "Nairobi County"
+      committee_id:
+        type: integer
+        format: int64
+        nullable: true
+        example: 3
+
+  ProjectUpdate:
+    type: object
+    properties:
+      title:
+        type: string
+        maxLength: 255
+        example: "Updated Community Water Project"
+      description:
+        type: string
+        example: "Updated description for the water project"
+      start_date:
+        type: string
+        format: date
+        example: "2023-04-01"
+      end_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2024-01-31"
+      status:
+        type: string
+        enum: [planning, in_progress, on_hold, completed, cancelled]
+        example: "in_progress"
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+        example: "high"
+      budget:
+        type: number
+        format: float
+        minimum: 0
+        example: 55000.00
+      progress:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+        example: 30
+      latitude:
+        type: number
+        format: float
+        example: -1.2921
+      longitude:
+        type: number
+        format: float
+        example: 36.8219
+      location_name:
+        type: string
+        example: "Updated Nairobi County"
+      committee_id:
+        type: integer
+        format: int64
+        nullable: true
+        example: 4
+
+  Task:
+    type: object
+    required:
+      - title
+      - due_date
+      - status
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      project_id:
+        type: integer
+        format: int64
+        example: 1
+      title:
+        type: string
+        maxLength: 255
+        example: "Site Assessment"
+      description:
+        type: string
+        example: "Conduct initial assessment of school sites"
+      due_date:
+        type: string
+        format: date
+        example: "2023-03-15"
+      completed_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2023-03-10"
+      status:
+        type: string
+        enum: [pending, in_progress, completed, cancelled]
+        example: "completed"
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+        example: "high"
+      assigned_to:
+        type: integer
+        format: int64
+        nullable: true
+        example: 5
+      created_by:
+        type: integer
+        format: int64
+        example: 1
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-02-16T09:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-03-10T10:30:00Z"
+      assignee:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 5
+          name:
+            type: string
+            example: "Jane Smith"
+          email:
+            type: string
+            format: email
+            example: "jane@example.com"
+
+  TaskCreate:
+    type: object
+    required:
+      - title
+      - due_date
+      - status
+    properties:
+      title:
+        type: string
+        maxLength: 255
+        example: "Site Assessment"
+      description:
+        type: string
+        example: "Conduct initial assessment of school sites"
+      due_date:
+        type: string
+        format: date
+        example: "2023-03-15"
+      status:
+        type: string
+        enum: [pending, in_progress, completed, cancelled]
+        example: "pending"
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+        example: "high"
+      assigned_to:
+        type: integer
+        format: int64
+        nullable: true
+        example: 5
+
+  ProjectMember:
+    type: object
+    required:
+      - user_id
+      - role
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      project_id:
+        type: integer
+        format: int64
+        example: 1
+      user_id:
+        type: integer
+        format: int64
+        example: 5
+      role:
+        type: string
+        enum: [manager, member, volunteer, stakeholder]
+        example: "manager"
+      joined_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-02-16T10:00:00Z"
+      user:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 5
+          name:
+            type: string
+            example: "Jane Smith"
+          email:
+            type: string
+            format: email
+            example: "jane@example.com"
+          avatar_url:
+            type: string
+            format: uri
+            example: "https://example.com/avatars/jane.jpg"
+
+  ProjectDocument:
+    type: object
+    required:
+      - name
+      - file_path
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      project_id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        maxLength: 255
+        example: "Project Proposal"
+      description:
+        type: string
+        example: "Detailed project proposal document"
+      file_path:
+        type: string
+        example: "projects/1/proposal.pdf"
+      file_size:
+        type: integer
+        format: int64
+        example: 1024000
+      mime_type:
+        type: string
+        example: "application/pdf"
+      uploaded_by:
+        type: integer
+        format: int64
+        example: 1
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-02-17T14:30:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-02-17T14:30:00Z"
+      uploader:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1
+          name:
+            type: string
+            example: "John Doe"
+
+  ProjectStats:
+    type: object
+    properties:
+      total_projects:
+        type: integer
+        example: 15
+      active_projects:
+        type: integer
+        example: 8
+      completed_projects:
+        type: integer
+        example: 5
+      total_budget:
+        type: number
+        format: float
+        example: 750000.00
+      total_spent:
+        type: number
+        format: float
+        example: 325000.00
+      by_status:
+        type: array
+        items:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "in_progress"
+            count:
+              type: integer
+              example: 8
+            budget:
+              type: number
+              format: float
+              example: 400000.00
+      recent_activities:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 1
+            description:
+              type: string
+              example: "Project status updated to In Progress"
+            type:
+              type: string
+              example: "status_update"
+            created_at:
+              type: string
+              format: date-time
+              example: "2023-03-01T10:15:00Z"
+            user:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  example: 1
+                name:
+                  type: string
+                  example: "John Doe"
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: false
+      message:
+        type: string
+        example: "Error message describing the issue"
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        example:
+          field_name: ["The field name is required"]
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Use format 'Bearer {token}'
+
+paths:
+  /projects:
+    get:
+      tags:
+        - Projects
+      summary: List all projects
+      description: Returns a paginated list of projects with optional filtering
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/order'
+        - name: status
+          in: query
+          description: Filter by status
+          type: string
+          enum: [planning, in_progress, on_hold, completed, cancelled]
+        - name: priority
+          in: query
+          description: Filter by priority
+          type: string
+          enum: [low, medium, high, urgent]
+        - name: committee_id
+          in: query
+          description: Filter by committee ID
+          type: integer
+          format: int64
+        - name: member_id
+          in: query
+          description: Filter by member ID (projects where member is involved)
+          type: integer
+          format: int64
+        - name: search
+          in: query
+          description: Search in project title or description
+          type: string
+      responses:
+        '200':
+          description: A paginated list of projects
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Project'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Projects
+      summary: Create a new project
+      description: Creates a new project with the provided details
+      parameters:
+        - name: project
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProjectCreate'
+      responses:
+        '201':
+          description: Project created successfully
+          schema:
+            $ref: '#/definitions/Project'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [project_manager, admin]
+
+  /projects/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Project ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Projects
+      summary: Get a specific project
+      description: Returns the details of a specific project including tasks and members
+      responses:
+        '200':
+          description: Project details
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Project'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    put:
+      tags:
+        - Projects
+      summary: Update a project
+      description: Updates an existing project
+      parameters:
+        - name: project
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProjectUpdate'
+      responses:
+        '200':
+          description: Project updated successfully
+          schema:
+            $ref: '#/definitions/Project'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [project_manager, admin]
+
+    delete:
+      tags:
+        - Projects
+      summary: Delete a project
+      description: Permanently deletes a project and all its associated data
+      responses:
+        '200':
+          description: Project deleted successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Project deleted successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+  /projects/{id}/tasks:
+    parameters:
+      - name: id
+        in: path
+        description: Project ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Tasks
+      summary: List project tasks
+      description: Returns a list of tasks for a specific project
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - name: status
+          in: query
+          description: Filter by status
+          type: string
+          enum: [pending, in_progress, completed, cancelled]
+        - name: assigned_to
+          in: query
+          description: Filter by assigned user ID
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: List of project tasks
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Task'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Tasks
+      summary: Create a new task
+      description: Creates a new task for a project
+      parameters:
+        - name: task
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TaskCreate'
+      responses:
+        '201':
+          description: Task created successfully
+          schema:
+            $ref: '#/definitions/Task'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [project_manager, admin]
+
+  /projects/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        description: Project ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Project Members
+      summary: List project members
+      description: Returns a list of members for a specific project
+      responses:
+        '200':
+          description: List of project members
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProjectMember'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Project Members
+      summary: Add member to project
+      description: Adds a member to a project with a specific role
+      parameters:
+        - name: member
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - user_id
+              - role
+            properties:
+              user_id:
+                type: integer
+                format: int64
+                example: 5
+              role:
+                type: string
+                enum: [manager, member, volunteer, stakeholder]
+                example: "member"
+      responses:
+        '201':
+          description: Member added to project
+          schema:
+            $ref: '#/definitions/ProjectMember'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [project_manager, admin]
+
+  /projects/{projectId}/members/{memberId}:
+    parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        required: true
+        type: integer
+        format: int64
+      - name: memberId
+        in: path
+        description: Member ID
+        required: true
+        type: integer
+        format: int64
+
+    delete:
+      tags:
+        - Project Members
+      summary: Remove member from project
+      description: Removes a member from a project
+      responses:
+        '200':
+          description: Member removed from project
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Member removed from project"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [project_manager, admin]
+
+  /projects/{id}/documents:
+    parameters:
+      - name: id
+        in: path
+        description: Project ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Project Documents
+      summary: List project documents
+      description: Returns a list of documents for a specific project
+      responses:
+        '200':
+          description: List of project documents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProjectDocument'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Project Documents
+      summary: Upload project document
+      description: Uploads a document to a project
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: file
+          in: formData
+          description: The file to upload
+          required: true
+          type: file
+        - name: name
+          in: formData
+          description: Document name
+          required: true
+          type: string
+        - name: description
+          in: formData
+          description: Document description
+          required: false
+          type: string
+      responses:
+        '201':
+          description: Document uploaded successfully
+          schema:
+            $ref: '#/definitions/ProjectDocument'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '413':
+          description: File too large
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [project_manager, admin]
+
+  /projects/stats:
+    get:
+      tags:
+        - Projects
+      summary: Get projects statistics
+      description: Returns statistics about projects
+      parameters:
+        - name: committee_id
+          in: query
+          description: Filter by committee ID
+          type: integer
+          format: int64
+        - name: year
+          in: query
+          description: Filter by year
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Projects statistics
+          schema:
+            $ref: '#/definitions/ProjectStats'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+parameters:
+  page:
+    name: page
+    in: query
+    description: Page number
+    type: integer
+    default: 1
+    minimum: 1
+  perPage:
+    name: per_page
+    in: query
+    description: Number of items per page
+    type: integer
+    default: 15
+    maximum: 100
+  sort:
+    name: sort
+    in: query
+    description: Field to sort by
+    type: string
+    default: created_at
+  order:
+    name: order
+    in: query
+    description: Sort order (asc or desc)
+    type: string
+    enum: [asc, desc]
+    default: desc
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Invalid input data"
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        message: "Unauthenticated."
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "You do not have permission to perform this action."
+  NotFound:
+    description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Project not found"
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The given data was invalid."
+        errors:
+          title: ["The title field is required."]
+  ServerError:
+    description: Server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Server Error"
+
+definitions:
+  PaginationMeta:
+    type: object
+    properties:
+      current_page:
+        type: integer
+        example: 1
+      from:
+        type: integer
+        example: 1
+      last_page:
+        type: integer
+        example: 1
+      per_page:
+        type: integer
+        example: 15
+      to:
+        type: integer
+        example: 10
+      total:
+        type: integer
+        example: 10

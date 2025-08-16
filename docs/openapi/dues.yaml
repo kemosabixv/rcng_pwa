@@ -1,0 +1,709 @@
+swagger: '2.0'
+info:
+  title: Dues API
+  description: |
+    This API handles the management of member dues in the RCNG system.
+    It allows tracking, collecting, and reporting on membership dues payments.
+  version: 1.0.0
+  contact:
+    name: RCNG Support
+    email: support@rcng.example.com
+  license:
+    name: Proprietary
+    url: https://rcng.example.com/license
+
+host: api.rcng.example.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  Due:
+    type: object
+    required:
+      - member_id
+      - amount
+      - due_date
+      - status
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      member_id:
+        type: integer
+        format: int64
+        example: 5
+      amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 100.00
+      paid_amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 100.00
+      due_date:
+        type: string
+        format: date
+        example: "2023-01-31"
+      paid_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2023-01-15"
+      status:
+        type: string
+        enum: [pending, partial, paid, overdue, waived]
+        example: "paid"
+      payment_method:
+        type: string
+        enum: [cash, bank_transfer, mpesa, cheque, other]
+        example: "mpesa"
+      reference_number:
+        type: string
+        maxLength: 100
+        example: "MPESA123456"
+      notes:
+        type: string
+        example: "Paid via M-Pesa"
+      created_by:
+        type: integer
+        format: int64
+        example: 1
+      updated_by:
+        type: integer
+        format: int64
+        example: 1
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-15T11:00:00Z"
+      member:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 5
+          name:
+            type: string
+            example: "John Doe"
+          email:
+            type: string
+            format: email
+            example: "john@example.com"
+          membership_number:
+            type: string
+            example: "MEM12345"
+
+  DueCreate:
+    type: object
+    required:
+      - member_id
+      - amount
+      - due_date
+    properties:
+      member_id:
+        type: integer
+        format: int64
+        example: 5
+      amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 100.00
+      due_date:
+        type: string
+        format: date
+        example: "2023-01-31"
+      notes:
+        type: string
+        example: "Annual membership fee 2023"
+
+  DueUpdate:
+    type: object
+    properties:
+      amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 120.00
+      due_date:
+        type: string
+        format: date
+        example: "2023-02-28"
+      status:
+        type: string
+        enum: [pending, partial, paid, overdue, waived]
+        example: "paid"
+      notes:
+        type: string
+        example: "Updated amount for 2023"
+
+  PaymentRecord:
+    type: object
+    required:
+      - due_id
+      - amount
+      - payment_date
+      - payment_method
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      due_id:
+        type: integer
+        format: int64
+        example: 1
+      amount:
+        type: number
+        format: float
+        minimum: 0.01
+        example: 100.00
+      payment_date:
+        type: string
+        format: date
+        example: "2023-01-15"
+      payment_method:
+        type: string
+        enum: [cash, bank_transfer, mpesa, cheque, other]
+        example: "mpesa"
+      reference_number:
+        type: string
+        maxLength: 100
+        example: "MPESA123456"
+      receipt_number:
+        type: string
+        maxLength: 100
+        example: "RCPT20230001"
+      notes:
+        type: string
+        example: "Paid via M-Pesa till 123456"
+      created_by:
+        type: integer
+        format: int64
+        example: 1
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-15T10:30:00Z"
+
+  DueSummary:
+    type: object
+    properties:
+      total_due:
+        type: number
+        format: float
+        example: 5000.00
+      total_paid:
+        type: number
+        format: float
+        example: 3500.00
+      total_outstanding:
+        type: number
+        format: float
+        example: 1500.00
+      by_status:
+        type: array
+        items:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "paid"
+            count:
+              type: integer
+              example: 25
+            amount:
+              type: number
+              format: float
+              example: 3500.00
+      recent_payments:
+        type: array
+        items:
+          $ref: '#/definitions/PaymentRecord'
+      overdue_dues:
+        type: array
+        items:
+          $ref: '#/definitions/Due'
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: false
+      message:
+        type: string
+        example: "Error message describing the issue"
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        example:
+          field_name: ["The field name is required"]
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Use format 'Bearer {token}'
+
+paths:
+  /dues:
+    get:
+      tags:
+        - Dues
+      summary: List all dues
+      description: Returns a paginated list of dues with optional filtering
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/order'
+        - name: member_id
+          in: query
+          description: Filter by member ID
+          type: integer
+          format: int64
+        - name: status
+          in: query
+          description: Filter by status
+          type: string
+          enum: [pending, partial, paid, overdue, waived]
+        - name: year
+          in: query
+          description: Filter by due year (YYYY)
+          type: integer
+          format: int32
+        - name: month
+          in: query
+          description: Filter by due month (1-12)
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 12
+        - name: search
+          in: query
+          description: Search in member name or reference number
+          type: string
+      responses:
+        '200':
+          description: A paginated list of dues
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Due'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Dues
+      summary: Create a new due
+      description: Creates a new due record for a member
+      parameters:
+        - name: due
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DueCreate'
+      responses:
+        '201':
+          description: Due created successfully
+          schema:
+            $ref: '#/definitions/Due'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [treasurer, admin]
+
+  /dues/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Due ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Dues
+      summary: Get a specific due
+      description: Returns the details of a specific due including payment history
+      responses:
+        '200':
+          description: Due details
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Due'
+              payments:
+                type: array
+                items:
+                  $ref: '#/definitions/PaymentRecord'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    put:
+      tags:
+        - Dues
+      summary: Update a due
+      description: Updates an existing due record
+      parameters:
+        - name: due
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DueUpdate'
+      responses:
+        '200':
+          description: Due updated successfully
+          schema:
+            $ref: '#/definitions/Due'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [treasurer, admin]
+
+    delete:
+      tags:
+        - Dues
+      summary: Delete a due
+      description: Permanently deletes a due record (only if no payments recorded)
+      responses:
+        '200':
+          description: Due deleted successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                example: []
+              message:
+                type: string
+                example: "Due deleted successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+  /dues/{id}/payments:
+    parameters:
+      - name: id
+        in: path
+        description: Due ID
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Payments
+      summary: Record a payment
+      description: Records a payment against a due
+      parameters:
+        - name: payment
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - amount
+              - payment_date
+              - payment_method
+            properties:
+              amount:
+                type: number
+                format: float
+                minimum: 0.01
+                example: 100.00
+              payment_date:
+                type: string
+                format: date
+                example: "2023-01-15"
+              payment_method:
+                type: string
+                enum: [cash, bank_transfer, mpesa, cheque, other]
+                example: "mpesa"
+              reference_number:
+                type: string
+                maxLength: 100
+                example: "MPESA123456"
+              receipt_number:
+                type: string
+                maxLength: 100
+                example: "RCPT20230001"
+              notes:
+                type: string
+                example: "Paid via M-Pesa till 123456"
+      responses:
+        '201':
+          description: Payment recorded successfully
+          schema:
+            $ref: '#/definitions/PaymentRecord'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [treasurer, admin]
+
+  /dues/summary:
+    get:
+      tags:
+        - Dues
+      summary: Get dues summary
+      description: Returns a summary of dues including totals and status breakdown
+      parameters:
+        - name: year
+          in: query
+          description: Filter by year (YYYY)
+          type: integer
+          format: int32
+        - name: member_id
+          in: query
+          description: Filter by member ID
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Dues summary
+          schema:
+            $ref: '#/definitions/DueSummary'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /members/{id}/dues:
+    parameters:
+      - name: id
+        in: path
+        description: Member ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Dues
+      summary: Get member's dues
+      description: Returns a list of all dues for a specific member
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/order'
+        - name: status
+          in: query
+          description: Filter by status
+          type: string
+          enum: [pending, partial, paid, overdue, waived]
+        - name: year
+          in: query
+          description: Filter by due year (YYYY)
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List of member's dues
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Due'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+parameters:
+  page:
+    name: page
+    in: query
+    description: Page number
+    type: integer
+    default: 1
+    minimum: 1
+  perPage:
+    name: per_page
+    in: query
+    description: Number of items per page
+    type: integer
+    default: 15
+    maximum: 100
+  sort:
+    name: sort
+    in: query
+    description: Field to sort by
+    type: string
+    default: due_date
+  order:
+    name: order
+    in: query
+    description: Sort order (asc or desc)
+    type: string
+    enum: [asc, desc]
+    default: desc
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Invalid input data"
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        message: "Unauthenticated."
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "You do not have permission to perform this action."
+  NotFound:
+    description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Due not found"
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The given data was invalid."
+        errors:
+          amount: ["The amount must be greater than 0."]
+  ServerError:
+    description: Server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Server Error"
+
+definitions:
+  PaginationMeta:
+    type: object
+    properties:
+      current_page:
+        type: integer
+        example: 1
+      from:
+        type: integer
+        example: 1
+      last_page:
+        type: integer
+        example: 1
+      per_page:
+        type: integer
+        example: 15
+      to:
+        type: integer
+        example: 10
+      total:
+        type: integer
+        example: 10
