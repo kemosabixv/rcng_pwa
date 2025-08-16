@@ -1,0 +1,530 @@
+swagger: '2.0'
+info:
+  title: Authentication API
+  description: |
+    This API handles user authentication and authorization in the RCNG system.
+    It provides endpoints for user login, logout, password reset, and token management.
+  version: 1.0.0
+  contact:
+    name: RCNG Support
+    email: support@rcng.example.com
+  license:
+    name: Proprietary
+    url: https://rcng.example.com/license
+
+host: api.rcng.example.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      name:
+        type: string
+        example: "John Doe"
+      email:
+        type: string
+        format: email
+        example: "john@example.com"
+      phone:
+        type: string
+        example: "+254712345678"
+      role:
+        type: string
+        enum: [admin, member, guest]
+        example: "member"
+      email_verified_at:
+        type: string
+        format: date-time
+        nullable: true
+        example: "2023-01-10T10:00:00Z"
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-11T11:00:00Z"
+
+  LoginRequest:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+      password:
+        type: string
+        format: password
+        example: "yourpassword"
+      remember_me:
+        type: boolean
+        default: false
+
+  LoginResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+      token_type:
+        type: string
+        example: "Bearer"
+      expires_at:
+        type: string
+        format: date-time
+        example: "2023-02-09T11:00:00Z"
+      user:
+        $ref: '#/definitions/User'
+
+  RegisterRequest:
+    type: object
+    required:
+      - name
+      - email
+      - password
+      - password_confirmation
+    properties:
+      name:
+        type: string
+        example: "John Doe"
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+      phone:
+        type: string
+        example: "+254712345678"
+      password:
+        type: string
+        format: password
+        minLength: 8
+        example: "password123"
+      password_confirmation:
+        type: string
+        format: password
+        example: "password123"
+
+  ForgotPasswordRequest:
+    type: object
+    required:
+      - email
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+
+  ResetPasswordRequest:
+    type: object
+    required:
+      - email
+      - token
+      - password
+      - password_confirmation
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+      token:
+        type: string
+        example: "a1b2c3d4e5f6g7h8i9j0"
+      password:
+        type: string
+        format: password
+        minLength: 8
+        example: "newpassword123"
+      password_confirmation:
+        type: string
+        format: password
+        example: "newpassword123"
+
+  UpdateProfileRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        example: "John Doe Updated"
+      email:
+        type: string
+        format: email
+        example: "updated@example.com"
+      phone:
+        type: string
+        example: "+254712345679"
+      current_password:
+        type: string
+        format: password
+        description: Required when changing password
+        example: "currentpassword123"
+      password:
+        type: string
+        format: password
+        minLength: 8
+        description: New password (if changing)
+        example: "newpassword123"
+      password_confirmation:
+        type: string
+        format: password
+        description: Must match password
+        example: "newpassword123"
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: false
+      message:
+        type: string
+        example: "Error message describing the issue"
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        example:
+          field_name: ["The field name is required"]
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Use format 'Bearer {token}'
+
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Authenticate a user and return an access token
+      parameters:
+        - name: credentials
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "User registered successfully. Please check your email to verify your account."
+              user:
+                $ref: '#/definitions/User'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /email/verify/{id}/{hash}:
+    get:
+      tags:
+        - Authentication
+      summary: Verify email
+      description: Verify a user's email address
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          format: int64
+          description: User ID
+        - name: hash
+          in: path
+          required: true
+          type: string
+          description: Verification hash
+        - name: expires
+          in: query
+          required: true
+          type: string
+          description: Expiration timestamp
+        - name: signature
+          in: query
+          required: true
+          type: string
+          description: Signature for verification
+      responses:
+        '200':
+          description: Email verified successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Email verified successfully"
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /email/resend:
+    post:
+      tags:
+        - Authentication
+      summary: Resend verification email
+      description: Resend the email verification notification
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: Verification email resent
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Verification link sent to your email"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /password/email:
+    post:
+      tags:
+        - Authentication
+      summary: Send password reset link
+      description: Send a password reset link to the user's email
+      parameters:
+        - name: email
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Password reset link sent
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Password reset link sent to your email"
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /password/reset:
+    post:
+      tags:
+        - Authentication
+      summary: Reset password
+      description: Reset the user's password using the token from the email
+      parameters:
+        - name: reset
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successful
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Password reset successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /user:
+    get:
+      tags:
+        - Authentication
+      summary: Get authenticated user
+      description: Get the currently authenticated user
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: User details
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+
+    put:
+      tags:
+        - Authentication
+      summary: Update profile
+      description: Update the authenticated user's profile
+      security:
+        - Bearer: []
+      parameters:
+        - name: profile
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Profile updated successfully"
+              user:
+                $ref: '#/definitions/User'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout
+      description: Invalidate the current access token
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: Successfully logged out
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Successfully logged out"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+
+  /refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh token
+      description: Refresh the current access token
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: Token refreshed successfully
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Invalid input data"
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        message: "Unauthenticated."
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "This action is unauthorized."
+  NotFound:
+    description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "User not found"
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The given data was invalid."
+        errors:
+          email: ["The email field is required."]
+          password: ["The password must be at least 8 characters."]
+  ServerError:
+    description: Server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Server Error"

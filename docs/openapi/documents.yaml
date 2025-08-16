@@ -1,0 +1,886 @@
+swagger: '2.0'
+info:
+  title: Documents API
+  description: |
+    This API handles document management in the RCNG system.
+    It allows uploading, downloading, and managing documents with different
+    visibility levels and access controls.
+  version: 1.0.0
+  contact:
+    name: RCNG Support
+    email: support@rcng.example.com
+  license:
+    name: Proprietary
+    url: https://rcng.example.com/license
+
+host: api.rcng.example.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - multipart/form-data
+  - application/json
+produces:
+  - application/json
+  - application/octet-stream
+
+definitions:
+  Document:
+    type: object
+    required:
+      - title
+      - file_name
+      - file_path
+      - file_size
+      - mime_type
+      - type
+      - visibility
+      - uploaded_by
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      title:
+        type: string
+        maxLength: 255
+        example: "Meeting Minutes - January 2023"
+      description:
+        type: string
+        example: "Minutes from the January committee meeting"
+      file_name:
+        type: string
+        example: "meeting_minutes_jan_2023.pdf"
+      file_path:
+        type: string
+        example: "documents/123e4567-e89b-12d3-a456-426614174000.pdf"
+      file_size:
+        type: integer
+        format: int64
+        example: 1048576
+      mime_type:
+        type: string
+        example: "application/pdf"
+      type:
+        type: string
+        example: "minutes"
+      visibility:
+        type: string
+        enum: [public, private, restricted]
+        example: "restricted"
+      version:
+        type: integer
+        minimum: 1
+        example: 1
+      download_count:
+        type: integer
+        minimum: 0
+        readOnly: true
+        example: 5
+      view_count:
+        type: integer
+        minimum: 0
+        readOnly: true
+        example: 10
+      uploaded_by:
+        type: integer
+        format: int64
+        example: 1
+      committee_id:
+        type: integer
+        format: int64
+        example: 1
+      project_id:
+        type: integer
+        format: int64
+        example: 1
+      tags:
+        type: array
+        items:
+          type: string
+        example: ["meeting", "minutes"]
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-11T11:00:00Z"
+      uploader:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1
+          name:
+            type: string
+            example: "John Doe"
+          email:
+            type: string
+            format: email
+            example: "john@example.com"
+      committee:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1
+          name:
+            type: string
+            example: "Executive Committee"
+      project:
+        type: object
+        nullable: true
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1
+          name:
+            type: string
+            example: "Website Redesign"
+
+  DocumentUpload:
+    type: object
+    required:
+      - title
+      - file
+      - type
+      - visibility
+      - uploaded_by
+    properties:
+      title:
+        type: string
+        maxLength: 255
+        example: "Meeting Minutes - January 2023"
+      description:
+        type: string
+        example: "Minutes from the January committee meeting"
+      file:
+        type: string
+        format: binary
+        description: The file to upload (max 10MB)
+      type:
+        type: string
+        example: "minutes"
+      visibility:
+        type: string
+        enum: [public, private, restricted]
+        example: "restricted"
+      uploaded_by:
+        type: integer
+        format: int64
+        example: 1
+      committee_id:
+        type: integer
+        format: int64
+        example: 1
+      project_id:
+        type: integer
+        format: int64
+        example: 1
+      tags:
+        type: array
+        items:
+          type: string
+        example: ["meeting", "minutes"]
+
+  DocumentUpdate:
+    type: object
+    properties:
+      title:
+        type: string
+        maxLength: 255
+        example: "Updated Meeting Minutes - January 2023"
+      description:
+        type: string
+        example: "Updated minutes from the January committee meeting"
+      type:
+        type: string
+        example: "meeting_minutes"
+      visibility:
+        type: string
+        enum: [public, private, restricted]
+        example: "restricted"
+      committee_id:
+        type: integer
+        format: int64
+        nullable: true
+        example: 1
+      project_id:
+        type: integer
+        format: int64
+        nullable: true
+        example: 1
+      tags:
+        type: array
+        items:
+          type: string
+        example: ["meeting", "minutes", "updated"]
+
+  DocumentReplace:
+    type: object
+    required:
+      - file
+    properties:
+      file:
+        type: string
+        format: binary
+        description: The new file to upload (max 10MB)
+      update_file_name:
+        type: boolean
+        default: false
+        description: Whether to update the file name to match the new file
+
+  DocumentStatistics:
+    type: object
+    properties:
+      total_documents:
+        type: integer
+        example: 50
+      total_size:
+        type: integer
+        format: int64
+        example: 104857600
+      formatted_total_size:
+        type: string
+        example: "100 MB"
+      documents_by_type:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+              example: "minutes"
+            count:
+              type: integer
+              example: 10
+            size:
+              type: integer
+              format: int64
+              example: 10485760
+      documents_by_visibility:
+        type: array
+        items:
+          type: object
+          properties:
+            visibility:
+              type: string
+              example: "public"
+            count:
+              type: integer
+              example: 15
+      recent_uploads:
+        type: array
+        items:
+          $ref: '#/definitions/Document'
+      largest_documents:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              example: 45
+            title:
+              type: string
+              example: "Annual Report 2022"
+            file_name:
+              type: string
+              example: "annual_report_2022.pdf"
+            file_size:
+              type: integer
+              format: int64
+              example: 10485760
+            type:
+              type: string
+              example: "reports"
+            visibility:
+              type: string
+              example: "public"
+            uploaded_by:
+              type: integer
+              format: int64
+              example: 2
+            created_at:
+              type: string
+              format: date-time
+              example: "2023-01-05T10:00:00Z"
+            uploader:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  example: 2
+                name:
+                  type: string
+                  example: "Jane Smith"
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: false
+      message:
+        type: string
+        example: "Error message describing the issue"
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        example:
+          field_name: ["The field name is required"]
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Use format 'Bearer {token}'
+
+paths:
+  /documents:
+    get:
+      tags:
+        - Documents
+      summary: List all documents
+      description: Returns a paginated list of documents with optional filtering
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/order'
+        - name: uploader_id
+          in: query
+          description: Filter by uploader ID
+          type: integer
+          format: int64
+        - name: committee_id
+          in: query
+          description: Filter by committee ID
+          type: integer
+          format: int64
+        - name: project_id
+          in: query
+          description: Filter by project ID
+          type: integer
+          format: int64
+        - name: type
+          in: query
+          description: Filter by document type
+          type: string
+        - name: visibility
+          in: query
+          description: Filter by visibility
+          type: string
+          enum: [public, private, restricted]
+        - name: search
+          in: query
+          description: Search in title or description
+          type: string
+        - name: start_date
+          in: query
+          description: Filter by start date (YYYY-MM-DD)
+          type: string
+          format: date
+        - name: end_date
+          in: query
+          description: Filter by end date (YYYY-MM-DD)
+          type: string
+          format: date
+      responses:
+        '200':
+          description: A paginated list of documents
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Document'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Documents
+      summary: Upload a new document
+      description: Uploads a new document with the provided metadata
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: title
+          in: formData
+          required: true
+          type: string
+          maxLength: 255
+        - name: description
+          in: formData
+          type: string
+        - name: file
+          in: formData
+          required: true
+          type: file
+          description: The file to upload (max 10MB)
+        - name: type
+          in: formData
+          required: true
+          type: string
+          maxLength: 100
+        - name: visibility
+          in: formData
+          required: true
+          type: string
+          enum: [public, private, restricted]
+        - name: uploaded_by
+          in: formData
+          required: true
+          type: integer
+          format: int64
+        - name: committee_id
+          in: formData
+          type: integer
+          format: int64
+        - name: project_id
+          in: formData
+          type: integer
+          format: int64
+        - name: tags
+          in: formData
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      responses:
+        '201':
+          description: Document uploaded successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '#/definitions/Document'
+              message:
+                type: string
+                example: "Document uploaded successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '413':
+          $ref: '#/responses/FileTooLarge'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /documents/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Document ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Documents
+      summary: Get document details
+      description: Returns the details of a specific document
+      responses:
+        '200':
+          description: Document details
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '#/definitions/Document'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    put:
+      tags:
+        - Documents
+      summary: Update document details
+      description: Updates the metadata of a specific document
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DocumentUpdate'
+      responses:
+        '200':
+          description: Document updated successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '#/definitions/Document'
+              message:
+                type: string
+                example: "Document updated successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    delete:
+      tags:
+        - Documents
+      summary: Delete a document
+      description: Permanently deletes a document and its file
+      responses:
+        '200':
+          description: Document deleted successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                example: []
+              message:
+                type: string
+                example: "Document deleted successfully"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /documents/{id}/download:
+    parameters:
+      - name: id
+        in: path
+        description: Document ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Documents
+      summary: Download a document
+      description: Downloads the document file
+      produces:
+        - application/octet-stream
+      responses:
+        '200':
+          description: Document file
+          schema:
+            type: file
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /documents/{id}/preview:
+    parameters:
+      - name: id
+        in: path
+        description: Document ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Documents
+      summary: Preview a document
+      description: Returns the document file for in-browser preview
+      produces:
+        - application/pdf
+        - image/*
+      responses:
+        '200':
+          description: Document preview
+          schema:
+            type: file
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /documents/{id}/replace:
+    parameters:
+      - name: id
+        in: path
+        description: Document ID
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Documents
+      summary: Replace document file
+      description: Replaces the file of an existing document
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: file
+          in: formData
+          required: true
+          type: file
+          description: The new file to upload (max 10MB)
+        - name: update_file_name
+          in: formData
+          type: boolean
+          default: false
+          description: Whether to update the file name to match the new file
+      responses:
+        '200':
+          description: Document file replaced successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  file_name:
+                    type: string
+                    example: "updated_file.pdf"
+                  file_size:
+                    type: integer
+                    format: int64
+                    example: 2097152
+                  mime_type:
+                    type: string
+                    example: "application/pdf"
+                  version:
+                    type: integer
+                    example: 2
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2023-01-12T12:00:00Z"
+              message:
+                type: string
+                example: "Document file replaced successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '413':
+          $ref: '#/responses/FileTooLarge'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /statistics/documents:
+    get:
+      tags:
+        - Statistics
+      summary: Get document statistics
+      description: Returns various statistics about documents
+      responses:
+        '200':
+          description: Document statistics
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '#/definitions/DocumentStatistics'
+              message:
+                type: string
+                example: "Document statistics retrieved successfully"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+parameters:
+  page:
+    name: page
+    in: query
+    description: Page number
+    type: integer
+    default: 1
+    minimum: 1
+  perPage:
+    name: per_page
+    in: query
+    description: Number of items per page
+    type: integer
+    default: 15
+    maximum: 100
+  sort:
+    name: sort
+    in: query
+    description: Field to sort by
+    type: string
+    default: created_at
+  order:
+    name: order
+    in: query
+    description: Sort order (asc or desc)
+    type: string
+    enum: [asc, desc]
+    default: desc
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Invalid input data"
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        message: "Unauthenticated."
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "You do not have permission to access this document."
+  NotFound:
+    description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Document not found"
+  FileTooLarge:
+    description: File too large
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The file may not be greater than 10MB."
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The given data was invalid."
+        errors:
+          field_name: ["The field name is required."]
+  ServerError:
+    description: Server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Server Error"
+
+definitions:
+  PaginationMeta:
+    type: object
+    properties:
+      current_page:
+        type: integer
+        example: 1
+      from:
+        type: integer
+        example: 1
+      last_page:
+        type: integer
+        example: 1
+      per_page:
+        type: integer
+        example: 15
+      to:
+        type: integer
+        example: 10
+      total:
+        type: integer
+        example: 10

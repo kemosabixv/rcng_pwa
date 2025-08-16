@@ -1,0 +1,996 @@
+swagger: '2.0'
+info:
+  title: Quotations API
+  description: |
+    This API handles the management of quotations in the RCNG system.
+    It allows creating, reading, updating, and deleting quotations,
+    as well as managing quotation items and workflow states.
+  version: 1.0.0
+  contact:
+    name: RCNG Support
+    email: support@rcng.example.com
+  license:
+    name: Proprietary
+    url: https://rcng.example.com/license
+
+host: api.rcng.example.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+  - application/pdf
+
+definitions:
+  Quotation:
+    type: object
+    required:
+      - vendor_name
+      - issue_date
+      - expiry_date
+      - status
+      - subtotal
+      - tax_amount
+      - discount_amount
+      - total_amount
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      quotation_number:
+        type: string
+        readOnly: true
+        example: "QT-2023-001"
+      project_id:
+        type: integer
+        format: int64
+        example: 1
+      vendor_name:
+        type: string
+        maxLength: 255
+        example: "Acme Corp"
+      vendor_email:
+        type: string
+        format: email
+        maxLength: 255
+        example: "contact@acmecorp.com"
+      vendor_phone:
+        type: string
+        maxLength: 20
+        example: "+254712345678"
+      vendor_company:
+        type: string
+        maxLength: 255
+        example: "Acme Corporation Ltd"
+      vendor_address:
+        type: string
+        example: "123 Business St, Nairobi"
+      issue_date:
+        type: string
+        format: date
+        example: "2023-01-15"
+      expiry_date:
+        type: string
+        format: date
+        example: "2023-02-15"
+      subtotal:
+        type: number
+        format: float
+        minimum: 0
+        example: 1000.00
+      tax_amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 160.00
+      discount_amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 0.00
+      total_amount:
+        type: number
+        format: float
+        minimum: 0
+        example: 1160.00
+      notes:
+        type: string
+        example: "Special terms and conditions apply"
+      terms_and_conditions:
+        type: string
+        example: "Standard payment terms: 30 days"
+      status:
+        type: string
+        enum: [draft, sent, accepted, rejected, expired]
+        example: "draft"
+      sent_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T12:00:00Z"
+      accepted_at:
+        type: string
+        format: date-time
+        readOnly: true
+      accepted_by:
+        type: integer
+        format: int64
+        readOnly: true
+      accepted_notes:
+        type: string
+      rejected_at:
+        type: string
+        format: date-time
+        readOnly: true
+      rejected_by:
+        type: integer
+        format: int64
+        readOnly: true
+      rejection_reason:
+        type: string
+        enum: [too_expensive, not_needed, other]
+      rejection_notes:
+        type: string
+      created_by:
+        type: integer
+        format: int64
+        readOnly: true
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T11:00:00Z"
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/QuotationItem'
+      project:
+        $ref: '#/definitions/Project'
+
+  QuotationItem:
+    type: object
+    required:
+      - description
+      - quantity
+      - unit_price
+      - tax_rate
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      description:
+        type: string
+        example: "Web Development Services"
+      quantity:
+        type: number
+        format: float
+        minimum: 0.01
+        example: 2
+      unit_price:
+        type: number
+        format: float
+        minimum: 0
+        example: 500.00
+      tax_rate:
+        type: number
+        format: float
+        minimum: 0
+        maximum: 100
+        example: 16.0
+      tax_amount:
+        type: number
+        format: float
+        readOnly: true
+        example: 160.00
+      total_amount:
+        type: number
+        format: float
+        readOnly: true
+        example: 1160.00
+
+  Project:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        example: "Website Redesign"
+      description:
+        type: string
+        example: "Complete redesign of the company website"
+      budget:
+        type: number
+        format: float
+        example: 100000.00
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: false
+      message:
+        type: string
+        example: "Error message describing the issue"
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        example:
+          field_name: ["The field name is required"]
+
+  StatisticsResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: true
+      data:
+        type: object
+        properties:
+          total_quotations:
+            type: integer
+            example: 10
+          total_amount:
+            type: number
+            format: float
+            example: 15000.00
+          quotations_by_status:
+            type: array
+            items:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "draft"
+                count:
+                  type: integer
+                  example: 3
+                total_amount:
+                  type: number
+                  format: float
+                  example: 3000.00
+          quotations_by_month:
+            type: array
+            items:
+              type: object
+              properties:
+                month:
+                  type: string
+                  example: "2023-01"
+                count:
+                  type: integer
+                  example: 2
+                total_amount:
+                  type: number
+                  format: float
+                  example: 3000.00
+          top_vendors:
+            type: array
+            items:
+              type: object
+              properties:
+                vendor_name:
+                  type: string
+                  example: "Acme Corp"
+                count:
+                  type: integer
+                  example: 5
+                total_amount:
+                  type: number
+                  format: float
+                  example: 8000.00
+          recent_quotations:
+            type: array
+            items:
+              $ref: '#/definitions/Quotation'
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Use format 'Bearer {token}'
+
+paths:
+  /quotations:
+    get:
+      tags:
+        - Quotations
+      summary: List all quotations
+      description: Returns a paginated list of quotations with optional filtering
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/order'
+        - name: status
+          in: query
+          description: Filter by status
+          type: string
+          enum: [draft, sent, accepted, rejected, expired]
+        - name: project_id
+          in: query
+          description: Filter by project ID
+          type: integer
+          format: int64
+        - name: vendor_name
+          in: query
+          description: Filter by vendor name (partial match)
+          type: string
+        - name: from_date
+          in: query
+          description: Filter by issue date (YYYY-MM-DD)
+          type: string
+          format: date
+        - name: to_date
+          in: query
+          description: Filter by expiry date (YYYY-MM-DD)
+          type: string
+          format: date
+      responses:
+        '200':
+          description: A paginated list of quotations
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Quotation'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Quotations
+      summary: Create a new quotation
+      description: Creates a new quotation with the provided data
+      parameters:
+        - name: quotation
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Quotation'
+      responses:
+        '201':
+          description: Quotation created successfully
+          schema:
+            $ref: '#/definitions/Quotation'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Quotation ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Quotations
+      summary: Get a specific quotation
+      description: Returns the details of a specific quotation
+      responses:
+        '200':
+          description: Quotation details
+          schema:
+            $ref: '#/definitions/Quotation'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    put:
+      tags:
+        - Quotations
+      summary: Update a quotation
+      description: Updates an existing quotation
+      parameters:
+        - name: quotation
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Quotation'
+      responses:
+        '200':
+          description: Quotation updated successfully
+          schema:
+            $ref: '#/definitions/Quotation'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    delete:
+      tags:
+        - Quotations
+      summary: Delete a quotation
+      description: Deletes a specific quotation
+      responses:
+        '200':
+          description: Quotation deleted successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Quotation deleted successfully"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{id}/items:
+    parameters:
+      - name: id
+        in: path
+        description: Quotation ID
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Quotation Items
+      summary: Add items to a quotation
+      description: Adds one or more items to an existing quotation
+      parameters:
+        - name: items
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/QuotationItem'
+      responses:
+        '200':
+          description: Items added successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/QuotationItem'
+              message:
+                type: string
+                example: "Items added successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{quotationId}/items/{itemId}:
+    parameters:
+      - name: quotationId
+        in: path
+        description: Quotation ID
+        required: true
+        type: integer
+        format: int64
+      - name: itemId
+        in: path
+        description: Item ID
+        required: true
+        type: integer
+        format: int64
+
+    put:
+      tags:
+        - Quotation Items
+      summary: Update a quotation item
+      description: Updates an existing item in a quotation
+      parameters:
+        - name: item
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/QuotationItem'
+      responses:
+        '200':
+          description: Item updated successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '#/definitions/QuotationItem'
+              message:
+                type: string
+                example: "Item updated successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    delete:
+      tags:
+        - Quotation Items
+      summary: Remove an item from a quotation
+      description: Removes an item from a quotation
+      responses:
+        '200':
+          description: Item removed successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                example: []
+              message:
+                type: string
+                example: "Item removed successfully"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{id}/send:
+    parameters:
+      - name: id
+        in: path
+        description: Quotation ID
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Quotation Workflow
+      summary: Mark a quotation as sent
+      description: Updates the status of a quotation to 'sent' and records the timestamp
+      responses:
+        '200':
+          description: Quotation marked as sent
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  status:
+                    type: string
+                    example: "sent"
+                  sent_at:
+                    type: string
+                    format: date-time
+                    example: "2023-01-10T12:00:00Z"
+              message:
+                type: string
+                example: "Quotation marked as sent"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{id}/accept:
+    parameters:
+      - name: id
+        in: path
+        description: Quotation ID
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Quotation Workflow
+      summary: Accept a quotation
+      description: Marks a quotation as accepted and records the acceptance details
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - accepted_by
+            properties:
+              accepted_by:
+                type: integer
+                format: int64
+                description: ID of the user accepting the quotation
+                example: 1
+              accepted_notes:
+                type: string
+                description: Optional notes about the acceptance
+                example: "Accepted as per discussion"
+      responses:
+        '200':
+          description: Quotation accepted successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  status:
+                    type: string
+                    example: "accepted"
+                  accepted_at:
+                    type: string
+                    format: date-time
+                    example: "2023-01-11T10:00:00Z"
+                  accepted_by:
+                    type: integer
+                    example: 1
+                  accepted_notes:
+                    type: string
+                    example: "Accepted as per discussion"
+              message:
+                type: string
+                example: "Quotation accepted successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{id}/reject:
+    parameters:
+      - name: id
+        in: path
+        description: Quotation ID
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Quotation Workflow
+      summary: Reject a quotation
+      description: Marks a quotation as rejected and records the rejection details
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - rejected_by
+              - rejection_reason
+            properties:
+              rejected_by:
+                type: integer
+                format: int64
+                description: ID of the user rejecting the quotation
+                example: 1
+              rejection_reason:
+                type: string
+                enum: [too_expensive, not_needed, other]
+                description: Reason for rejection
+                example: "too_expensive"
+              rejection_notes:
+                type: string
+                description: Additional notes about the rejection
+                example: "The quoted price exceeds our budget"
+      responses:
+        '200':
+          description: Quotation rejected successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  status:
+                    type: string
+                    example: "rejected"
+                  rejected_at:
+                    type: string
+                    format: date-time
+                    example: "2023-01-11T11:00:00Z"
+                  rejected_by:
+                    type: integer
+                    example: 1
+                  rejection_reason:
+                    type: string
+                    example: "too_expensive"
+                  rejection_notes:
+                    type: string
+                    example: "The quoted price exceeds our budget"
+              message:
+                type: string
+                example: "Quotation rejected successfully"
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /quotations/{id}/duplicate:
+    parameters:
+      - name: id
+        in: path
+        description: Quotation ID to duplicate
+        required: true
+        type: integer
+        format: int64
+
+    post:
+      tags:
+        - Quotations
+      summary: Duplicate a quotation
+      description: Creates a copy of an existing quotation with a new quotation number
+      responses:
+        '201':
+          description: Quotation duplicated successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '#/definitions/Quotation'
+              message:
+                type: string
+                example: "Quotation duplicated successfully"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+  /statistics/quotations:
+    get:
+      tags:
+        - Statistics
+      summary: Get quotation statistics
+      description: Returns various statistics about quotations
+      responses:
+        '200':
+          description: Quotation statistics
+          schema:
+            $ref: '#/definitions/StatisticsResponse'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+parameters:
+  page:
+    name: page
+    in: query
+    description: Page number
+    type: integer
+    default: 1
+    minimum: 1
+  perPage:
+    name: per_page
+    in: query
+    description: Number of items per page
+    type: integer
+    default: 15
+    maximum: 100
+  sort:
+    name: sort
+    in: query
+    description: Field to sort by
+    type: string
+    default: created_at
+  order:
+    name: order
+    in: query
+    description: Sort order (asc or desc)
+    type: string
+    enum: [asc, desc]
+    default: desc
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Invalid input data"
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        message: "Unauthenticated."
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "You do not have permission to perform this action."
+  NotFound:
+    description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Quotation not found"
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The given data was invalid."
+        errors:
+          field_name: ["The field name is required."]
+  ServerError:
+    description: Server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Server Error"
+
+definitions:
+  PaginationMeta:
+    type: object
+    properties:
+      current_page:
+        type: integer
+        example: 1
+      from:
+        type: integer
+        example: 1
+      last_page:
+        type: integer
+        example: 1
+      per_page:
+        type: integer
+        example: 15
+      to:
+        type: integer
+        example: 10
+      total:
+        type: integer
+        example: 10

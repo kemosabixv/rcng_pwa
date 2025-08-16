@@ -1,0 +1,622 @@
+swagger: '2.0'
+info:
+  title: Committees API
+  description: |
+    This API handles the management of committees in the RCNG system.
+    It allows creating, reading, updating, and deleting committees,
+    as well as managing committee members and their roles.
+  version: 1.0.0
+  contact:
+    name: RCNG Support
+    email: support@rcng.example.com
+  license:
+    name: Proprietary
+    url: https://rcng.example.com/license
+
+host: api.rcng.example.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  Committee:
+    type: object
+    required:
+      - name
+      - description
+      - status
+    properties:
+      id:
+        type: integer
+        format: int64
+        readOnly: true
+        example: 1
+      name:
+        type: string
+        maxLength: 255
+        example: "Executive Committee"
+      description:
+        type: string
+        example: "Oversees the overall operations of the organization"
+      status:
+        type: string
+        enum: [active, inactive, archived]
+        example: "active"
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-10T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+        example: "2023-01-11T11:00:00Z"
+      members:
+        type: array
+        items:
+          $ref: '#/definitions/CommitteeMember'
+
+  CommitteeMember:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      user_id:
+        type: integer
+        format: int64
+        example: 5
+      committee_id:
+        type: integer
+        format: int64
+        example: 1
+      role:
+        type: string
+        enum: [chair, vice_chair, secretary, treasurer, member]
+        example: "chair"
+      start_date:
+        type: string
+        format: date
+        example: "2023-01-01"
+      end_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2023-12-31"
+      is_active:
+        type: boolean
+        default: true
+      user:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 5
+          name:
+            type: string
+            example: "John Doe"
+          email:
+            type: string
+            format: email
+            example: "john@example.com"
+
+  CommitteeCreate:
+    type: object
+    required:
+      - name
+      - description
+      - status
+    properties:
+      name:
+        type: string
+        maxLength: 255
+        example: "New Committee"
+      description:
+        type: string
+        example: "Description of the new committee"
+      status:
+        type: string
+        enum: [active, inactive, archived]
+        example: "active"
+
+  CommitteeUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 255
+        example: "Updated Committee Name"
+      description:
+        type: string
+        example: "Updated committee description"
+      status:
+        type: string
+        enum: [active, inactive, archived]
+        example: "active"
+
+  CommitteeMemberUpdate:
+    type: object
+    properties:
+      role:
+        type: string
+        enum: [chair, vice_chair, secretary, treasurer, member]
+        example: "member"
+      start_date:
+        type: string
+        format: date
+        example: "2023-01-01"
+      end_date:
+        type: string
+        format: date
+        nullable: true
+        example: "2023-12-31"
+      is_active:
+        type: boolean
+        example: true
+
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        default: false
+      message:
+        type: string
+        example: "Error message describing the issue"
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+        example:
+          field_name: ["The field name is required"]
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Use format 'Bearer {token}'
+
+paths:
+  /committees:
+    get:
+      tags:
+        - Committees
+      summary: List all committees
+      description: Returns a paginated list of committees with optional filtering
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - $ref: '#/parameters/sort'
+        - $ref: '#/parameters/order'
+        - name: status
+          in: query
+          description: Filter by status
+          type: string
+          enum: [active, inactive, archived]
+        - name: search
+          in: query
+          description: Search in name or description
+          type: string
+      responses:
+        '200':
+          description: A paginated list of committees
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Committee'
+              meta:
+                $ref: '#/definitions/PaginationMeta'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Committees
+      summary: Create a new committee
+      description: Creates a new committee with the provided data
+      parameters:
+        - name: committee
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommitteeCreate'
+      responses:
+        '201':
+          description: Committee created successfully
+          schema:
+            $ref: '#/definitions/Committee'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+  /committees/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Committee ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Committees
+      summary: Get a specific committee
+      description: Returns the details of a specific committee including its members
+      responses:
+        '200':
+          description: Committee details
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Committee'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    put:
+      tags:
+        - Committees
+      summary: Update a committee
+      description: Updates an existing committee
+      parameters:
+        - name: committee
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommitteeUpdate'
+      responses:
+        '200':
+          description: Committee updated successfully
+          schema:
+            $ref: '#/definitions/Committee'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+    delete:
+      tags:
+        - Committees
+      summary: Delete a committee
+      description: Permanently deletes a committee
+      responses:
+        '200':
+          description: Committee deleted successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                example: []
+              message:
+                type: string
+                example: "Committee deleted successfully"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+  /committees/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        description: Committee ID
+        required: true
+        type: integer
+        format: int64
+
+    get:
+      tags:
+        - Committee Members
+      summary: List committee members
+      description: Returns a list of all members of a specific committee
+      responses:
+        '200':
+          description: List of committee members
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/CommitteeMember'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: []
+
+    post:
+      tags:
+        - Committee Members
+      summary: Add member to committee
+      description: Adds a user to a committee with the specified role
+      parameters:
+        - name: member
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - user_id
+              - role
+            properties:
+              user_id:
+                type: integer
+                format: int64
+                example: 5
+              role:
+                type: string
+                enum: [chair, vice_chair, secretary, treasurer, member]
+                example: "member"
+              start_date:
+                type: string
+                format: date
+                example: "2023-01-01"
+              end_date:
+                type: string
+                format: date
+                nullable: true
+                example: "2023-12-31"
+      responses:
+        '201':
+          description: Member added to committee
+          schema:
+            $ref: '#/definitions/CommitteeMember'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '409':
+          description: User is already a member of this committee
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+  /committees/{id}/members/{memberId}:
+    parameters:
+      - name: id
+        in: path
+        description: Committee ID
+        required: true
+        type: integer
+        format: int64
+      - name: memberId
+        in: path
+        description: Committee Member ID
+        required: true
+        type: integer
+        format: int64
+
+    put:
+      tags:
+        - Committee Members
+      summary: Update committee member
+      description: Updates a member's role or status in a committee
+      parameters:
+        - name: member
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommitteeMemberUpdate'
+      responses:
+        '200':
+          description: Member updated successfully
+          schema:
+            $ref: '#/definitions/CommitteeMember'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '422':
+          $ref: '#/responses/ValidationError'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+    delete:
+      tags:
+        - Committee Members
+      summary: Remove member from committee
+      description: Removes a user from a committee
+      responses:
+        '200':
+          description: Member removed from committee
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                example: []
+              message:
+                type: string
+                example: "Member removed from committee"
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '500':
+          $ref: '#/responses/ServerError'
+      security:
+        - Bearer: [admin]
+
+parameters:
+  page:
+    name: page
+    in: query
+    description: Page number
+    type: integer
+    default: 1
+    minimum: 1
+  perPage:
+    name: per_page
+    in: query
+    description: Number of items per page
+    type: integer
+    default: 15
+    maximum: 100
+  sort:
+    name: sort
+    in: query
+    description: Field to sort by
+    type: string
+    default: name
+  order:
+    name: order
+    in: query
+    description: Sort order (asc or desc)
+    type: string
+    enum: [asc, desc]
+    default: asc
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Invalid input data"
+  Unauthorized:
+    description: Unauthorized
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        message: "Unauthenticated."
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "You do not have permission to perform this action."
+  NotFound:
+    description: Resource not found
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Committee not found"
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "The given data was invalid."
+        errors:
+          name: ["The name field is required."]
+  ServerError:
+    description: Server error
+    schema:
+      $ref: '#/definitions/ErrorResponse'
+    examples:
+      application/json:
+        success: false
+        message: "Server Error"
+
+definitions:
+  PaginationMeta:
+    type: object
+    properties:
+      current_page:
+        type: integer
+        example: 1
+      from:
+        type: integer
+        example: 1
+      last_page:
+        type: integer
+        example: 1
+      per_page:
+        type: integer
+        example: 15
+      to:
+        type: integer
+        example: 10
+      total:
+        type: integer
+        example: 10
