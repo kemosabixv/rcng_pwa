@@ -1,4 +1,4 @@
-# Ruiru Central Neighbourhood Association (RCNG)
+# Rotary Club of Nairobi Gigiri (RCNG)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
