@@ -127,6 +127,7 @@ class DatabaseSeeder extends Seeder
             $this->call([
                 MemberSeeder::class,
                 BlogSeeder::class,
+                EventSeeder::class,
             ]);
         }
     }

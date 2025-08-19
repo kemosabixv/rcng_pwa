@@ -5,16 +5,15 @@ import { Layout } from "../components/Layout";
 import Head from "next/head";
 import { Settings, Globe } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { AdminDashboard } from "../components/AdminDashboard";
+import { useRouter } from "next/router";
 
 function AppContent({ children }: { children: React.ReactNode }) {
-
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [language, setLanguage] = useState("en");
   const { user } = useAuth();
+  const router = useRouter();
 
   const handleAdminAccess = () => {
-    setShowAdminDashboard(true);
+    router.push('/dashboard');
   };
 
   const toggleLanguage = () => {
@@ -22,10 +21,15 @@ function AppContent({ children }: { children: React.ReactNode }) {
     // In a real app, this would trigger translation system
   };
 
-  if (showAdminDashboard) {
-    return <AdminDashboard onClose={() => setShowAdminDashboard(false)} />;
+  // Check if current page is dashboard
+  const isDashboardPage = router.pathname === '/dashboard';
+
+  // For dashboard page, render without Layout
+  if (isDashboardPage) {
+    return <>{children}</>;
   }
 
+  // For all other pages, render with Layout
   return (
     <Layout>
       {/* Admin Access Button for Authenticated Users */}
@@ -46,7 +50,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
             className="bg-white text-gray-700 border border-gray-300 shadow-lg hover:bg-gray-50"
           >
             <Settings className="w-4 h-4 mr-2" />
-            Admin Panel
+            Dashboard
           </Button>
         </div>
       )}

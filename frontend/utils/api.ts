@@ -95,10 +95,43 @@ class ApiClient {
       }
 
       if (!response.ok) {
+        // Extract specific error message from Laravel response structure
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+
+        console.log('=== API Error Debug ===');
+        console.log('Response status:', response.status);
+        console.log('Response data:', JSON.stringify(data, null, 2));
+        console.log('Data type:', typeof data);
+        console.log('Has errors?', !!data?.errors);
+        console.log('errors object:', JSON.stringify(data?.errors, null, 2));
+        console.log('errors.error value:', data?.errors?.error);
+        console.log('data.errors type:', typeof data?.errors);
+
+        if (data && typeof data === 'object') {
+          // Priority: errors.error (our specific auth errors)
+          if (data.errors && typeof data.errors === 'object' && data.errors.error) {
+            errorMessage = String(data.errors.error);
+            console.log('Using errors.error:', errorMessage);
+          }
+          // Fallback: data.error (if it's a string)
+          else if (data.error && typeof data.error === 'string') {
+            errorMessage = data.error;
+            console.log('Using data.error:', errorMessage);
+          }
+          // Fallback: data.message (Laravel standard)
+          else if (data.message && typeof data.message === 'string') {
+            errorMessage = data.message;
+            console.log('Using data.message:', errorMessage);
+          }
+        }
+
+        console.log('Final error message:', errorMessage);
+        console.log('=== End Debug ===');
+
         return {
           success: false,
-          error: data.message || data.error || `HTTP ${response.status}: ${response.statusText}`,
-          errors: data.errors,
+          error: errorMessage,
+          errors: data?.errors || null,
         };
       }
 
@@ -478,6 +511,149 @@ class ApiClient {
 
   isAuthenticated(): boolean {
     return !!this.token;
+  }
+
+  // Events
+  async getEvents(params?: {
+    search?: string;
+    status?: string;
+    type?: string;
+    category?: string;
+    visibility?: string;
+    timeframe?: string;
+    featured?: boolean;
+    sort_by?: string;
+    sort_order?: string;
+    page?: number;
+    per_page?: number;
+  }): Promise<ApiResponse<any>> {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+
+    const queryString = queryParams.toString();
+    const endpoint = `/events${queryString ? `?${queryString}` : ''}`;
+
+    return this.request(endpoint);
+  }
+
+  async getEvent(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/events/${id}`);
+  }
+
+  async createEvent(eventData: {
+    title: string;
+    description: string;
+    excerpt?: string;
+    type: string;
+    category: string;
+    start_date: string;
+    end_date: string;
+    all_day?: boolean;
+    location?: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    max_attendees?: number;
+    registration_fee?: number;
+    registration_deadline?: string;
+    requires_registration?: boolean;
+    status: string;
+    visibility: string;
+    is_featured?: boolean;
+    tags?: string[];
+    notes?: string;
+    contact_info?: any;
+  }): Promise<ApiResponse<any>> {
+    return this.request('/events', {
+      method: 'POST',
+      body: JSON.stringify(eventData),
+    });
+  }
+
+  async updateEvent(id: string, eventData: any): Promise<ApiResponse<any>> {
+    return this.request(`/events/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(eventData),
+    });
+  }
+
+  async deleteEvent(id: string): Promise<ApiResponse<any>> {
+    return this.request(`/events/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getEventStatistics(): Promise<ApiResponse<any>> {
+    return this.request('/statistics/events');
+  }
+
+  async getFeaturedEvents(): Promise<ApiResponse<any>> {
+    return this.request('/events/featured/current');
+  }
+
+  // Public event methods
+  async getPublicEvents(params?: {
+    search?: string;
+    type?: string;
+    category?: string;
+    timeframe?: string;
+    page?: number;
+    per_page?: number;
+  }): Promise<ApiResponse<any>> {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          queryParams.append(key, value.toString());
+        }
+      });
+    }
+
+    const queryString = queryParams.toString();
+    const endpoint = `/public/events${queryString ? `?${queryString}` : ''}`;
+
+    // Save current token and temporarily remove it for public access
+    const currentToken = this.token;
+    this.token = null;
+
+    const response = await this.request(endpoint);
+
+    // Restore the token
+    this.token = currentToken;
+
+    return response;
+  }
+
+  async getPublicEvent(slug: string): Promise<ApiResponse<any>> {
+    // Save current token and temporarily remove it for public access
+    const currentToken = this.token;
+    this.token = null;
+
+    const response = await this.request(`/public/events/${slug}`);
+
+    // Restore the token
+    this.token = currentToken;
+
+    return response;
+  }
+
+  async getPublicFeaturedEvents(): Promise<ApiResponse<any>> {
+    // Save current token and temporarily remove it for public access
+    const currentToken = this.token;
+    this.token = null;
+
+    const response = await this.request('/public/events/featured/current');
+
+    // Restore the token
+    this.token = currentToken;
+
+    return response;
   }
 
   // Health check method to verify API connectivity

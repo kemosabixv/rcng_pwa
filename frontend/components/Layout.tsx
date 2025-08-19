@@ -45,7 +45,14 @@ export function Layout({ children }: LayoutProps) {
       ],
     },
     { name: "Our Members", href: "directory" },
-    { name: "Events", href: "events" },
+    {
+      name: "Activities",
+      dropdown: [
+        { name: "Events", href: "events" },
+        { name: "Projects", href: "projects" },
+        { name: "Club Service", href: "service" },
+      ],
+    },
     { name: "Blog", href: "blog" },
     { name: "Join", href: "membership" },
   ];
@@ -328,8 +335,6 @@ export function Layout({ children }: LayoutProps) {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>United Nations Avenue</li>
-                <li>Gigiri, Nairobi, Kenya</li>
                 <li>info@rotarynairobigigiri.org</li>
                 <li>+254 700 123 456</li>
               </ul>
@@ -356,7 +361,7 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
         <div
-          className="border-t mt-8 pt-8 text-center text-sm w-full absolute left-0 bottom-0 flex items-center justify-center min-h-[60px]"
+          className="border-t text-center text-sm w-full absolute left-0 bottom-0 flex items-center justify-center min-h-[60px]"
           style={{
             backgroundColor: "#254998",
             color: "rgba(255, 255, 255, 1)",

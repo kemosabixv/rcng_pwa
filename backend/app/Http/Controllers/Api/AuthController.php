@@ -67,19 +67,29 @@ class AuthController extends BaseController
             'remember_me' => 'boolean'
         ]);
 
-        if (!Auth::attempt($credentials)) {
-            return $this->sendError('Unauthorized', ['error' => 'Invalid credentials'], 401);
+        // Check if user exists with this email
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return $this->sendError('Unauthorized', ['error' => 'this user does not exist'], 401);
         }
 
-        $user = $request->user();
-        
+        // Check if password is correct
+        if (!Hash::check($credentials['password'], $user->password)) {
+            return $this->sendError('Unauthorized', ['error' => 'incorrect password'], 401);
+        }
+
+        // Check if account is active
         if ($user->status !== 'active') {
             return $this->sendError('Account Inactive', ['error' => 'Your account is not active'], 403);
         }
 
+        // Create authentication token
+        Auth::login($user);
         $tokenResult = $user->createToken('auth_token');
         $token = $tokenResult->plainTextToken;
-        $expiresAt = now()->addMinutes(config('sanctum.expiration', 60 * 24 * 30));
+        $expirationMinutes = config('sanctum.expiration') ?: (60 * 24 * 30); // 30 days default
+        $expiresAt = now()->addMinutes($expirationMinutes);
 
         return $this->sendResponse([
             'user' => $user,

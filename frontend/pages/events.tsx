@@ -1,5 +1,5 @@
-import {EventsPage} from '../components/EventsPage'
+import {EventsPageDynamic} from '../components/EventsPageDynamic'
 
 export default function Events() {
-    return <EventsPage />
+    return <EventsPageDynamic />
 }

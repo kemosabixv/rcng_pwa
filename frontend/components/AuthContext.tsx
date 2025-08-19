@@ -70,11 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(response.data.user);
         return {};
       } else {
+        // Return the specific error message from the API response
         return { error: response.error || "Failed to sign in" };
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      return { error: "Failed to sign in" };
+      // For network/unexpected errors, show a generic message
+      return { error: "Network error - please check your connection" };
     } finally {
       setLoading(false);
     }

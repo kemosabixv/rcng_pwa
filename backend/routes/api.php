@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DueController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\QuotationController;
 use App\Http\Controllers\Api\BlogPostController;
+use App\Http\Controllers\Api\EventController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -86,6 +87,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('blog-posts', BlogPostController::class);
     Route::get('blog-posts/featured/current', [BlogPostController::class, 'featured']);
     Route::get('statistics/blog-posts', [BlogPostController::class, 'statistics']);
+
+    // Events
+    Route::apiResource('events', EventController::class);
+    Route::get('events/featured/current', [EventController::class, 'featured']);
+    Route::get('statistics/events', [EventController::class, 'statistics']);
 });
 
 // Public access routes
@@ -103,6 +109,14 @@ Route::get('public/blog-posts/{slug}', [BlogPostController::class, 'show'])
     ->name('public.blog-posts.show');
 Route::get('public/blog-posts/featured/current', [BlogPostController::class, 'featured'])
     ->name('public.blog-posts.featured');
+
+// Public event routes
+Route::get('public/events', [EventController::class, 'publicIndex'])
+    ->name('public.events.index');
+Route::get('public/events/{slug}', [EventController::class, 'publicShow'])
+    ->name('public.events.show');
+Route::get('public/events/featured/current', [EventController::class, 'featured'])
+    ->name('public.events.featured');
 
 // Test email route (remove in production)
 if (app()->environment('local')) {

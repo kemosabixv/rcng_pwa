@@ -288,7 +288,19 @@ export function HomePage({ onPageChange }: HomePageProps) {
                       </div>
                       <div className="flex items-center justify-center space-x-3">
                         <MapPin className="h-6 w-6 text-red-600" />
-                        <span>Downtown Community Center</span>
+                        <span>
+                          <p>
+                            Trademark,{" "}
+                            <span style={{ fontSize: '14px' }}>
+                              Village Market,{" "}
+                            </span>
+                          </p>
+                          <p>
+                            <span style={{ fontSize: '14px' }}>
+                              Limuru Rd, Nairobi
+                            </span>
+                          </p>
+                        </span>
                       </div>
                     </div>
                     <Link href="/contact">
@@ -339,12 +351,14 @@ export function HomePage({ onPageChange }: HomePageProps) {
                     <h2 className="text-3xl font-bold mb-4">
                       The Rotary Foundation
                     </h2>
-                    <p className="text-lg text-muted-foreground mb-6 max-w-3xl mx-auto">
-                      Our Foundation enables Rotarians to advance world
-                      understanding, goodwill, and peace through the improvement
-                      of health, the support of education, and the alleviation
-                      of poverty.
-                    </p>
+                    <div className="text-lg text-muted-foreground mb-6 max-w-3xl mx-auto">
+                      <p>
+                        The Rotary Foundation enables Rotarians to
+                        advance world understanding, goodwill, and peace
+                        through the improvement of health, the support
+                        of education, and the alleviation of poverty.
+                      </p>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-orange-600">
@@ -371,18 +385,13 @@ export function HomePage({ onPageChange }: HomePageProps) {
                         </div>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
-                      onClick={() =>
-                        window.open(
-                          "https://www.rotary.org/en/about-rotary/rotary-foundation",
-                          "_blank",
-                        )
-                      }
+                    <a
+                      href="https://my.rotary.org/en/rotary-foundation"
+                      target="_blank"
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-orange-300 bg-transparent text-orange-700 hover:bg-orange-50 h-9 rounded-md px-3"
                     >
                       Learn More About TRF
-                    </Button>
+                    </a>
                   </div>
                 </CardContent>
               </Card>

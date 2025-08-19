@@ -39,10 +39,10 @@ function runCommand(command, args, cwd = BACKEND_DIR) {
 async function setupDatabase() {
   try {
     console.log('1️⃣ Running database migrations...');
-    await runCommand('php', ['artisan', 'migrate', '--force']);
+    await runCommand('php', ['artisan', 'migrate', 'fresh']);
     
     console.log('\n2️⃣ Seeding database with sample data...');
-    await runCommand('php', ['artisan', 'db:seed', '--force']);
+    await runCommand('php', ['artisan', 'db:seed', '--class=DatabaseSeeder']);
     
     console.log('\n✅ Database setup completed successfully!');
     console.log('\n📊 Your backend now has:');

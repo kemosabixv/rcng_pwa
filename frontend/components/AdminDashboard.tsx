@@ -53,18 +53,17 @@ import {
   X,
   Menu,
   Home,
-  Building,
-  FileFolder,
+  Building2,
+  Folder,
   Receipt,
-  PenTool,
+  Pen,
 } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { apiClient } from "../utils/api";
 import { BlogManagement } from "./BlogManagement";
+import { EventManagement } from "./EventManagement";
 
-interface AdminDashboardProps {
-  onClose: () => void;
-}
+interface AdminDashboardProps {}
 
 interface Member {
   id: string;
@@ -165,7 +164,7 @@ interface Analytics {
   };
 }
 
-export function AdminDashboard({ onClose }: AdminDashboardProps) {
+export function AdminDashboard({}: AdminDashboardProps = {}) {
   // Auth context
   const { user, getAccessToken } = useAuth();
 
@@ -206,8 +205,8 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
     },
     {
       id: "committees",
-      label: "Committees", 
-      icon: Building,
+      label: "Committees",
+      icon: Building2,
       description: "Committee management and structure"
     },
     {
@@ -225,20 +224,26 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
     {
       id: "documents",
       label: "Documents",
-      icon: FileFolder,
+      icon: Folder,
       description: "Document library and management"
     },
     {
       id: "quotations",
       label: "Quotations",
       icon: Receipt,
-      description: "Client quotations and estimates"
+      description: "Vendor quotations and estimates"
     },
     {
       id: "blog",
       label: "Blog",
-      icon: PenTool,
+      icon: Pen,
       description: "Blog management and content"
+    },
+    {
+      id: "events",
+      label: "Events",
+      icon: Calendar,
+      description: "Event management and scheduling"
     },
     {
       id: "analytics",
@@ -483,7 +488,7 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
                       className="h-16 flex flex-col items-center justify-center"
                       onClick={() => setActiveTab("blog")}
                     >
-                      <PenTool className="h-6 w-6 mb-1" />
+                      <Pen className="h-6 w-6 mb-1" />
                       <span className="text-sm">Blog</span>
                     </Button>
                     <Button 
@@ -511,6 +516,9 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
 
       case "blog":
         return <BlogManagement />;
+
+      case "events":
+        return <EventManagement />;
 
       case "members":
         return (
@@ -645,12 +653,12 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-background z-50 overflow-hidden">
-      <div className="flex h-full">
+    <div className="min-h-screen bg-background">
+      <div className="flex min-h-screen">
         {/* Mobile Overlay */}
         {sidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden"
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -682,16 +690,16 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
           <div className="flex-1 overflow-y-auto py-4">
             <nav className="space-y-1 px-2">
               {navigationItems.map((item) => {
-                const Icon = item.icon;
+                const Icon = item.icon || FileText; // Fallback to FileText if icon is undefined
                 const isActive = activeTab === item.id;
-                
+
                 return (
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full flex items-center px-3 py-2 rounded-lg text-left transition-colors ${
-                      isActive 
-                        ? 'bg-blue-800 text-white' 
+                      isActive
+                        ? 'bg-blue-800 text-white'
                         : 'text-blue-100 hover:bg-blue-500 hover:text-white'
                     }`}
                     title={!sidebarOpen ? item.label : ''}
@@ -712,15 +720,16 @@ export function AdminDashboard({ onClose }: AdminDashboardProps) {
           {/* Sidebar Footer */}
           <div className="p-4 border-t border-blue-500">
             <Button
-              onClick={onClose}
+              onClick={() => window.location.href = '/'}
               variant="ghost"
               size="sm"
               className="w-full text-white hover:bg-blue-500"
             >
-              <X className={`w-4 h-4 ${sidebarOpen ? 'mr-2' : 'mx-auto'}`} />
-              {sidebarOpen && "Close Dashboard"}
+              <Home className={`w-4 h-4 ${sidebarOpen ? 'mr-2' : 'mx-auto'}`} />
+              {sidebarOpen && "Back to Site"}
             </Button>
           </div>
+
         </div>
 
         {/* Main Content */}
